@@ -42,32 +42,7 @@ This project is a **Room and Resource Allocation System** designed to streamline
 
 The project uses a relational schema hosted on Supabase.
 
-```mermaid
-erDiagram
-    ROOMS ||--o{ BOOKINGS : has
-    BOOKINGS ||--|{ BOOKING_RESOURCES : includes
-    RESOURCES ||--o{ BOOKING_RESOURCES : linked_to
 
-    ROOMS {
-        uuid id PK
-        string name
-        int capacity
-    }
-
-    RESOURCES {
-        uuid id PK
-        string name
-        string type
-    }
-
-    BOOKINGS {
-        uuid id PK
-        uuid room_id FK
-        timestamp start_time
-        timestamp end_time
-        string status "Pending/Approved/Rejected"
-        string user_email
-    }
 
     BOOKING_RESOURCES {
         uuid booking_id FK
