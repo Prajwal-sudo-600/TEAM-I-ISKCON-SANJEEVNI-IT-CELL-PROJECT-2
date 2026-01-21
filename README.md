@@ -42,9 +42,3 @@ This project is a **Room and Resource Allocation System** designed to streamline
 
 The project uses a relational schema hosted on Supabase.
 
-
-
-    BOOKING_RESOURCES {
-        uuid booking_id FK
-        uuid resource_id FK
-    }
