@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import AdminLayout from '@/components/admin/admin-layout'
+import AdminLayout from '@/app/admin/components/admin/admin-layout'
 import { User, Mail, Phone, Shield, Pencil, LogOut, Save, X } from 'lucide-react'
 
 const initialProfile = {

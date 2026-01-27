@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import AdminLayout from '@/components/admin/admin-layout'
+import AdminLayout from '@/app/admin/components/admin/admin-layout'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 const rooms = [
