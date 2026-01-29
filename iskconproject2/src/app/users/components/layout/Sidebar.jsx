@@ -14,11 +14,11 @@ import {
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/available-rooms', label: 'Available Rooms', icon: DoorOpen },
-  { href: '/book-room', label: 'Book Room', icon: CalendarPlus },
-  { href: '/my-bookings', label: 'My Bookings', icon: ClipboardList },
-  { href: '/calendar', label: 'Calendar', icon: Calendar },
-  { href: '/guidelines', label: 'Guidelines', icon: BookOpen },
+  { href: '/users/available-rooms', label: 'Available Rooms', icon: DoorOpen },
+  { href: '/users/book-room', label: 'Book Room', icon: CalendarPlus },
+  { href: '/users/my-bookings', label: 'My Bookings', icon: ClipboardList },
+  { href: '/users/calendar', label: 'Calendar', icon: Calendar },
+  { href: '/users/guidelines', label: 'Guidelines', icon: BookOpen },
 ]
 
 export default function Sidebar() {

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Bell, User, ChevronDown, LogOut, Settings } from 'lucide-react'
 import { usePathname } from 'next/navigation'
+import { useRouter } from "next/navigation";
 import Link from 'next/link'
 import NotificationPanel from '../notifications/NotificationPanel'
 
@@ -22,6 +23,8 @@ export default function Header({ onNotificationClick, showNotifications, notific
   const pageTitle = pageNames[pathname] || 'Dashboard'
   
   const unreadCount = notifications?.filter(n => !n.read).length || 0
+  const router = useRouter();
+
 
   return (
     <header className="h-16 bg-white border-b border-gold flex items-center justify-between px-6 shadow-sm">
@@ -88,6 +91,7 @@ export default function Header({ onNotificationClick, showNotifications, notific
                   onClick={() => {
                     setShowProfileMenu(false)
                     // In a real app, this would clear session/auth state
+                    router.push("/");
                     alert('You have been logged out successfully.')
                   }}
                 >
