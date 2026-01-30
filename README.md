@@ -41,4 +41,3 @@ This project is a **Room and Resource Allocation System** designed to streamline
 ## 🗄️ Database Structure
 
 The project uses a relational schema hosted on Supabase.
-

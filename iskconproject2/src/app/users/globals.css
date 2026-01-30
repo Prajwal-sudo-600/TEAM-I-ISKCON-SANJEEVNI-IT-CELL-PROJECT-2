@@ -1,0 +1,116 @@
+@import 'tailwindcss';
+
+
+:root {
+  /* ISKCON Official Color Palette */
+  --peacock-blue: #1F4E79;
+  --saffron: #FF9933;
+  --warm-white: #FDFBF7;
+  --lotus-pink: #E6A6B2;
+  --soft-gold: #E8D8A8;
+  --primary-text: #2B2B2B;
+  --muted-text: #6B6B6B;
+
+  /* Semantic tokens mapped to ISKCON colors */
+  --background: #FDFBF7;
+  --foreground: #2B2B2B;
+  --card: #FFFFFF;
+  --card-foreground: #2B2B2B;
+  --popover: #FFFFFF;
+  --popover-foreground: #2B2B2B;
+  --primary: #1F4E79;
+  --primary-foreground: #FFFFFF;
+  --secondary: #FF9933;
+  --secondary-foreground: #FFFFFF;
+  --muted: #F5F3EF;
+  --muted-foreground: #6B6B6B;
+  --accent: #E6A6B2;
+  --accent-foreground: #2B2B2B;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --border: #E8D8A8;
+  --input: #E8D8A8;
+  --ring: #1F4E79;
+  --radius: 0.5rem;
+
+  /* Sidebar specific */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #2B2B2B;
+  --sidebar-primary: #1F4E79;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FFF5E6;
+  --sidebar-accent-foreground: #2B2B2B;
+  --sidebar-border: #E8D8A8;
+  --sidebar-ring: #1F4E79;
+}
+
+@theme inline {
+  --font-sans: 'Geist', 'Geist Fallback', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* ISKCON Custom Colors */
+  --color-peacock: #1F4E79;
+  --color-saffron: #FF9933;
+  --color-warm-white: #FDFBF7;
+  --color-lotus: #E6A6B2;
+  --color-gold: #E8D8A8;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-warm-white text-foreground;
+  }
+}
+
+/* Custom scrollbar for devotional feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F3EF;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E8D8A8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1F4E79;
+}
