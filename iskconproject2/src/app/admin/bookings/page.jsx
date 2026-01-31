@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import AdminLayout from '@/app/admin/components/admin/admin-layout'
 import { Eye, Check, X, Filter, Search, ChevronLeft, ChevronRight } from 'lucide-react'
+import { approveBooking, rejectBooking } from '@/actions/bookingActions'
+
 
 const initialBookings = [
   { 
@@ -112,42 +114,80 @@ export default function BookingsPage() {
     }
   }
 
-  const handleApprove = (id) => {
-    setBookings(bookings.map(booking => {
-      if (booking.id === id) {
-        return {
-          ...booking,
-          status: 'Approved',
-          history: [...booking.history, { status: 'Approved', date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }), by: 'Admin' }]
-        }
-      }
-      return booking
-    }))
+  // const handleApprove = (id) => {
+  //   setBookings(bookings.map(booking => {
+  //     if (booking.id === id) {
+  //       return {
+  //         ...booking,
+  //         status: 'Approved',
+  //         history: [...booking.history, { status: 'Approved', date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }), by: 'Admin' }]
+  //       }
+  //     }
+  //     return booking
+  //   }))
+  // }
+
+  const handleApprove = async (id) => {
+  try {
+    await approveBooking(id)
+    setBookings(prev =>
+      prev.map(b =>
+        b.id === id ? { ...b, status: 'Approved' } : b
+      )
+    )
+  } catch (error) {
+    console.error('Approve failed:', error)
+    alert('Something went wrong while approving. Please try again.')
   }
+}
+
 
   const handleReject = (id) => {
     setSelectedBooking(bookings.find(b => b.id === id))
     setShowRejectModal(true)
   }
 
-  const confirmReject = () => {
-    if (selectedBooking) {
-      setBookings(bookings.map(booking => {
-        if (booking.id === selectedBooking.id) {
-          return {
-            ...booking,
-            status: 'Rejected',
-            remarks: rejectReason,
-            history: [...booking.history, { status: 'Rejected', date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }), by: 'Admin' }]
-          }
-        }
-        return booking
-      }))
-    }
+  // const confirmReject = () => {
+  //   if (selectedBooking) {
+  //     setBookings(bookings.map(booking => {
+  //       if (booking.id === selectedBooking.id) {
+  //         return {
+  //           ...booking,
+  //           status: 'Rejected',
+  //           remarks: rejectReason,
+  //           history: [...booking.history, { status: 'Rejected', date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }), by: 'Admin' }]
+  //         }
+  //       }
+  //       return booking
+  //     }))
+  //   }
+  //   setShowRejectModal(false)
+  //   setRejectReason('')
+  //   setSelectedBooking(null)
+  // }
+
+  const confirmReject = async () => {
+  try {
+    await rejectBooking(selectedBooking.id, rejectReason)
+
+    setBookings(prev =>
+      prev.map(b =>
+        b.id === selectedBooking.id
+          ? { ...b, status: 'Rejected', remarks: rejectReason }
+          : b
+      )
+    )
+
     setShowRejectModal(false)
     setRejectReason('')
     setSelectedBooking(null)
+
+  } catch (error) {
+    console.error('Reject failed:', error)
+    alert('Failed to reject booking. Please try again.')
   }
+}
+
 
   const viewDetails = (booking) => {
     setSelectedBooking(booking)
