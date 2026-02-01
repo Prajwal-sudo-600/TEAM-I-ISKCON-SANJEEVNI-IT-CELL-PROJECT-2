@@ -2,9 +2,7 @@
 
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 
-/**
- * Fetch all bookings from database
- */
+
 export async function getAllBookings() {
   const supabase = await createSupabaseServerClient()
 
@@ -21,9 +19,7 @@ export async function getAllBookings() {
   return data
 }
 
-/**
- * Approve a booking
- */
+
 export async function approveBooking(id) {
   const supabase = await createSupabaseServerClient()
 
@@ -38,9 +34,7 @@ export async function approveBooking(id) {
   }
 }
 
-/**
- * Reject a booking
- */
+
 export async function rejectBooking(id) {
   const supabase = await createSupabaseServerClient()
 
