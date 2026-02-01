@@ -2,34 +2,35 @@
 
 import { DoorOpen, FileText, Clock, CheckCircle } from 'lucide-react'
 
-const summaryData = [
-  {
-    title: 'Available Rooms Today',
-    value: '12',
-    icon: DoorOpen,
-    color: 'bg-peacock',
-  },
-  {
-    title: 'Your Booking Requests',
-    value: '5',
-    icon: FileText,
-    color: 'bg-saffron',
-  },
-  {
-    title: 'Pending Approvals',
-    value: '2',
-    icon: Clock,
-    color: 'bg-lotus',
-  },
-  {
-    title: 'Approved Bookings',
-    value: '8',
-    icon: CheckCircle,
-    color: 'bg-green-600',
-  },
-]
+export default function SummaryCards({ data, loading }) {
 
-export default function SummaryCards() {
+  const summaryData = [
+    {
+      title: 'Available Rooms Today',
+      value: data?.roomsToday ?? 0,
+      icon: DoorOpen,
+      color: 'bg-peacock',
+    },
+    {
+      title: 'Your Booking Requests',
+      value: data?.totalBookings ?? 0,
+      icon: FileText,
+      color: 'bg-saffron',
+    },
+    {
+      title: 'Pending Approvals',
+      value: data?.pending ?? 0,
+      icon: Clock,
+      color: 'bg-lotus',
+    },
+    {
+      title: 'Approved Bookings',
+      value: data?.approved ?? 0,
+      icon: CheckCircle,
+      color: 'bg-green-600',
+    },
+  ]
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {summaryData.map((item, index) => {
@@ -42,7 +43,9 @@ export default function SummaryCards() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-muted-foreground text-sm font-medium">{item.title}</p>
-                <p className="text-3xl font-bold text-foreground mt-2">{item.value}</p>
+                <p className="text-3xl font-bold text-foreground mt-2">
+                  {loading ? '...' : item.value}
+                </p>
               </div>
               <div className={`${item.color} p-3 rounded-lg`}>
                 <Icon className="w-5 h-5 text-white" />

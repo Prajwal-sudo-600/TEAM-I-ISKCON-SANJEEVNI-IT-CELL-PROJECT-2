@@ -14,7 +14,7 @@ const pageNames = {
   '/my-bookings': 'My Bookings',
   '/calendar': 'Calendar',
   '/guidelines': 'Guidelines',
-  '/profile': 'Profile',
+  '/users/profile': 'Profile',
 }
 
 export default function Header({ onNotificationClick, showNotifications, notifications, onMarkAllRead }) {
@@ -78,7 +78,7 @@ export default function Header({ onNotificationClick, showNotifications, notific
               />
               <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gold z-50 py-2">
                 <Link 
-                  href="/profile"
+                  href="/users/profile"
                   className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
                   onClick={() => setShowProfileMenu(false)}
                 >

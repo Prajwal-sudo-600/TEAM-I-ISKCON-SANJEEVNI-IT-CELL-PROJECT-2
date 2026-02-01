@@ -5,43 +5,38 @@ import AdminLayout from './components/admin/admin-layout'
 import { CalendarCheck, DoorOpen, Package, Clock, TrendingUp, Users } from 'lucide-react'
 
 const summaryCards = [
-  { 
-    title: 'Total Bookings', 
-    value: 156, 
-    icon: CalendarCheck, 
+  {
+    title: 'Total Bookings',
+    value: 156,
+    icon: CalendarCheck,
     trend: '+12%',
     color: 'bg-primary'
   },
-  { 
-    title: 'Active Rooms', 
-    value: 24, 
-    icon: DoorOpen, 
+  {
+    title: 'Active Rooms',
+    value: 24,
+    icon: DoorOpen,
     trend: '+3',
     color: 'bg-[#1F4E79]'
   },
-  { 
-    title: 'Resources', 
-    value: 89, 
-    icon: Package, 
+  {
+    title: 'Resources',
+    value: 89,
+    icon: Package,
     trend: '+5',
     color: 'bg-[#1F4E79]/80'
   },
-  { 
-    title: 'Pending Requests', 
-    value: 18, 
-    icon: Clock, 
+  {
+    title: 'Pending Requests',
+    value: 18,
+    icon: Clock,
     trend: '-2',
     color: 'bg-accent'
   },
 ]
 
-const recentBookings = [
-  { id: 1, user: 'Radha Devi', room: 'Conference Hall A', date: '24 Jan 2026', status: 'Approved' },
-  { id: 2, user: 'Krishna Das', room: 'Meeting Room 3', date: '24 Jan 2026', status: 'Pending' },
-  { id: 3, user: 'Govinda Prabhu', room: 'Seminar Hall', date: '25 Jan 2026', status: 'Pending' },
-  { id: 4, user: 'Madhavi Dasi', room: 'Training Room 1', date: '25 Jan 2026', status: 'Approved' },
-  { id: 5, user: 'Damodar Das', room: 'Conference Hall B', date: '26 Jan 2026', status: 'Rejected' },
-]
+// Removed static recentBookings array
+
 
 const devotionalQuotes = [
   "Service to the Lord is the highest form of devotion.",
@@ -50,16 +45,83 @@ const devotionalQuotes = [
   "May every action be an offering to the Divine.",
 ]
 
+import { getDashboardStats } from '@/actions/admindashboardactions'
+
 export default function Dashboard() {
   const [currentQuote, setCurrentQuote] = useState(0)
-  const [stats, setStats] = useState(summaryCards)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Real Data States
+  const [statsData, setStatsData] = useState({
+    totalBookings: 0,
+    activeRooms: 0,
+    totalResources: 0,
+    pendingRequests: 0,
+    activeUsers: 0,
+    todaysBookings: 0
+  })
+  const [recentBookingsList, setRecentBookingsList] = useState([])
 
   useEffect(() => {
+    // Quote rotation
     const interval = setInterval(() => {
       setCurrentQuote((prev) => (prev + 1) % devotionalQuotes.length)
     }, 10000)
+
+    // Fetch Real Data
+    const loadData = async () => {
+      setIsLoading(true)
+      const res = await getDashboardStats()
+      if (res.success && res.data) {
+        setStatsData({
+          totalBookings: res.data.totalBookings,
+          activeRooms: res.data.activeRooms,
+          totalResources: res.data.totalResources,
+          pendingRequests: res.data.pendingRequests,
+          activeUsers: res.data.activeUsers,
+          todaysBookings: res.data.todaysBookings
+        })
+        setRecentBookingsList(res.data.recentBookings)
+      }
+      setIsLoading(false)
+    }
+    loadData()
+
     return () => clearInterval(interval)
   }, [])
+
+  // Construct summary cards dynamically
+  const summaryCards = [
+    {
+      title: 'Total Bookings',
+      value: statsData.totalBookings,
+      icon: CalendarCheck,
+      trend: 'Lifetime',
+      color: 'bg-primary'
+    },
+    {
+      title: 'Active Rooms',
+      value: statsData.activeRooms,
+      icon: DoorOpen,
+      trend: 'Available',
+      color: 'bg-[#1F4E79]'
+    },
+    {
+      title: 'Resources',
+      value: statsData.totalResources,
+      icon: Package,
+      trend: 'In Stock',
+      color: 'bg-[#1F4E79]/80'
+    },
+    {
+      title: 'Pending Requests',
+      value: statsData.pendingRequests,
+      icon: Clock,
+      trend: 'Action Needed',
+      color: 'bg-accent'
+    },
+  ]
+
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -91,7 +153,7 @@ export default function Dashboard() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((card) => {
+        {summaryCards.map((card) => {
           const Icon = card.icon
           return (
             <div
@@ -136,18 +198,23 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentBookings.map((booking) => (
-                    <tr key={booking.id} className="border-b border-border/50 last:border-0">
-                      <td className="py-4 text-sm text-foreground">{booking.user}</td>
-                      <td className="py-4 text-sm text-foreground">{booking.room}</td>
-                      <td className="py-4 text-sm text-muted-foreground">{booking.date}</td>
-                      <td className="py-4">
-                        <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(booking.status)}`}>
-                          {booking.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                  {isLoading ? (
+                    <tr><td colSpan="4" className="p-4 text-center">Loading...</td></tr>
+                  ) : recentBookingsList.length === 0 ? (
+                    <tr><td colSpan="4" className="p-4 text-center">No recent bookings</td></tr>
+                  ) : (
+                    recentBookingsList.map((booking) => (
+                      <tr key={booking.id} className="border-b border-border/50 last:border-0">
+                        <td className="py-4 text-sm text-foreground">{booking.user}</td>
+                        <td className="py-4 text-sm text-foreground">{booking.room}</td>
+                        <td className="py-4 text-sm text-muted-foreground">{booking.date}</td>
+                        <td className="py-4">
+                          <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(booking.status)}`}>
+                            {booking.status}
+                          </span>
+                        </td>
+                      </tr>
+                    )))}
                 </tbody>
               </table>
             </div>
@@ -166,28 +233,28 @@ export default function Dashboard() {
                 <Users className="w-5 h-5 text-primary" />
                 <span className="text-sm text-foreground">Active Users</span>
               </div>
-              <span className="text-lg font-semibold text-foreground">42</span>
+              <span className="text-lg font-semibold text-foreground">{statsData.activeUsers}</span>
             </div>
             <div className="flex items-center justify-between p-4 bg-secondary rounded-lg">
               <div className="flex items-center gap-3">
                 <CalendarCheck className="w-5 h-5 text-primary" />
                 <span className="text-sm text-foreground">Today's Bookings</span>
               </div>
-              <span className="text-lg font-semibold text-foreground">8</span>
+              <span className="text-lg font-semibold text-foreground">{statsData.todaysBookings}</span>
             </div>
             <div className="flex items-center justify-between p-4 bg-secondary rounded-lg">
               <div className="flex items-center gap-3">
                 <DoorOpen className="w-5 h-5 text-primary" />
-                <span className="text-sm text-foreground">Available Rooms</span>
+                <span className="text-sm text-foreground">Active Rooms</span>
               </div>
-              <span className="text-lg font-semibold text-foreground">16</span>
+              <span className="text-lg font-semibold text-foreground">{statsData.activeRooms}</span>
             </div>
             <div className="flex items-center justify-between p-4 bg-secondary rounded-lg">
               <div className="flex items-center gap-3">
                 <Clock className="w-5 h-5 text-accent" />
                 <span className="text-sm text-foreground">Pending Approvals</span>
               </div>
-              <span className="text-lg font-semibold text-foreground">18</span>
+              <span className="text-lg font-semibold text-foreground">{statsData.pendingRequests}</span>
             </div>
           </div>
         </div>

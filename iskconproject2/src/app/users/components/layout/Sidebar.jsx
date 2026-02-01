@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 
 const navItems = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/users', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/users/available-rooms', label: 'Available Rooms', icon: DoorOpen },
   { href: '/users/book-room', label: 'Book Room', icon: CalendarPlus },
   { href: '/users/my-bookings', label: 'My Bookings', icon: ClipboardList },

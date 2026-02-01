@@ -12,12 +12,12 @@ import {
 } from 'lucide-react'
 
 const navItems = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Booking Control', href: '/bookings', icon: CalendarCheck },
-  { name: 'Rooms Management', href: '/rooms', icon: DoorOpen },
-  { name: 'Resources', href: '/resources', icon: Package },
-  { name: 'Schedule Overview', href: '/schedule', icon: Calendar },
-  { name: 'Admin Profile', href: '/profile', icon: User },
+  { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { name: 'Booking Control', href: '/admin/bookings', icon: CalendarCheck },
+  { name: 'Rooms Management', href: '/admin/rooms', icon: DoorOpen },
+  { name: 'Resources', href: '/admin/resources', icon: Package },
+  { name: 'Schedule Overview', href: '/admin/schedule', icon: Calendar },
+  { name: 'Admin Profile', href: '/admin/profile', icon: User },
 ]
 
 export default function Sidebar() {

@@ -1,68 +1,37 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import AdminLayout from '@/app/admin/components/admin/admin-layout'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-
-const rooms = [
-  'Conference Hall A',
-  'Conference Hall B',
-  'Meeting Room 1',
-  'Meeting Room 2',
-  'Meeting Room 3',
-  'Seminar Hall',
-  'Training Room 1',
-  'Training Room 2',
-]
-
-const timeSlots = [
-  '8:00 AM',
-  '9:00 AM',
-  '10:00 AM',
-  '11:00 AM',
-  '12:00 PM',
-  '1:00 PM',
-  '2:00 PM',
-  '3:00 PM',
-  '4:00 PM',
-  '5:00 PM',
-  '6:00 PM',
-]
-
-const bookingData = {
-  '2026-01-20': [
-    { room: 'Conference Hall A', startTime: '10:00 AM', endTime: '12:00 PM', title: 'Bhagavad Gita Study', status: 'Approved' },
-    { room: 'Meeting Room 3', startTime: '2:00 PM', endTime: '4:00 PM', title: 'IT Team Sync', status: 'Approved' },
-  ],
-  '2026-01-21': [
-    { room: 'Seminar Hall', startTime: '9:00 AM', endTime: '1:00 PM', title: 'New Devotee Orientation', status: 'Approved' },
-    { room: 'Training Room 1', startTime: '3:00 PM', endTime: '5:00 PM', title: 'Volunteer Training', status: 'Approved' },
-  ],
-  '2026-01-22': [
-    { room: 'Conference Hall B', startTime: '10:00 AM', endTime: '12:00 PM', title: 'Festival Planning', status: 'Pending' },
-    { room: 'Meeting Room 1', startTime: '11:00 AM', endTime: '1:00 PM', title: 'Prasadam Committee', status: 'Approved' },
-    { room: 'Meeting Room 2', startTime: '2:00 PM', endTime: '3:00 PM', title: 'Quick Standup', status: 'Approved' },
-  ],
-  '2026-01-23': [
-    { room: 'Conference Hall A', startTime: '9:00 AM', endTime: '11:00 AM', title: 'Management Meeting', status: 'Approved' },
-    { room: 'Training Room 2', startTime: '1:00 PM', endTime: '3:00 PM', title: 'Software Training', status: 'Pending' },
-  ],
-  '2026-01-24': [
-    { room: 'Seminar Hall', startTime: '10:00 AM', endTime: '2:00 PM', title: 'Guest Lecture', status: 'Approved' },
-    { room: 'Meeting Room 3', startTime: '3:00 PM', endTime: '5:00 PM', title: 'Project Review', status: 'Approved' },
-    { room: 'Conference Hall A', startTime: '4:00 PM', endTime: '6:00 PM', title: 'Evening Session', status: 'Pending' },
-  ],
-  '2026-01-25': [
-    { room: 'Conference Hall A', startTime: '8:00 AM', endTime: '10:00 AM', title: 'Morning Satsang', status: 'Approved' },
-    { room: 'Training Room 1', startTime: '11:00 AM', endTime: '1:00 PM', title: 'Tech Workshop', status: 'Approved' },
-  ],
-  '2026-01-26': [
-    { room: 'Seminar Hall', startTime: '9:00 AM', endTime: '5:00 PM', title: 'Republic Day Event', status: 'Approved' },
-  ],
-}
+import { getRooms } from '@/actions/adminroomsactions'
+import { getBookings } from '@/actions/adminbookingsactions'
 
 export default function SchedulePage() {
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 0, 20))
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [rooms, setRooms] = useState([])
+  const [bookings, setBookings] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      const [roomsRes, bookingsRes] = await Promise.all([
+        getRooms(),
+        getBookings()
+      ])
+
+      if (roomsRes.success) {
+        setRooms(roomsRes.data || [])
+      }
+
+      if (bookingsRes.success) {
+        setBookings(bookingsRes.data || [])
+      }
+      setLoading(false)
+    }
+
+    fetchData()
+  }, [])
 
   const getWeekDates = (date) => {
     const week = []
@@ -70,7 +39,7 @@ export default function SchedulePage() {
     const day = startOfWeek.getDay()
     const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1)
     startOfWeek.setDate(diff)
-    
+
     for (let i = 0; i < 7; i++) {
       const d = new Date(startOfWeek)
       d.setDate(startOfWeek.getDate() + i)
@@ -94,7 +63,7 @@ export default function SchedulePage() {
   }
 
   const goToToday = () => {
-    setCurrentDate(new Date(2026, 0, 24))
+    setCurrentDate(new Date())
   }
 
   const formatDateKey = (date) => {
@@ -114,21 +83,78 @@ export default function SchedulePage() {
     return `${start.toLocaleDateString('en-GB', { month: 'short' })} - ${end.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}`
   }
 
-  const getBookingsForCell = (date, room) => {
+  // Helper to format 14:00:00 -> 2:00 PM
+  const formatTimeDisplay = (timeStr) => {
+    if (!timeStr) return ''
+    const [hours, minutes] = timeStr.split(':')
+    const h = parseInt(hours, 10)
+    const ampm = h >= 12 ? 'PM' : 'AM'
+    const h12 = h % 12 || 12
+    return `${h12}:${minutes} ${ampm}`
+  }
+
+  const getBookingsForCell = (date, roomId) => {
     const dateKey = formatDateKey(date)
-    const dayBookings = bookingData[dateKey] || []
-    return dayBookings.filter(b => b.room === room)
+
+    return bookings.filter(b =>
+      b.date === dateKey &&
+      b.rooms?.name === roomId // Note: room arg passed from map below is actually the room object if we change logic, but here we iterate names? 
+      // Wait, logic check: rooms state contains objects. The map below iterates rooms.
+    )
+  }
+
+  // Refined helper using IDs for robustness if possible, but rooms state has objects.
+  // Let's update the grid rendering to pass room ID or Name correctly.
+  const getCellBookings = (date, roomName) => {
+    const dateKey = formatDateKey(date)
+    return bookings.filter(b =>
+      b.date === dateKey &&
+      b.rooms?.name === roomName
+    )
   }
 
   const getStatusColor = (status) => {
-    return status === 'Approved' 
-      ? 'bg-primary/90 border-primary text-white' 
+    // Standardize status for comparison
+    const s = status?.toLowerCase()
+    return s === 'approved'
+      ? 'bg-primary/90 border-primary text-white'
       : 'bg-accent/90 border-accent text-white'
   }
 
   const isToday = (date) => {
-    const today = new Date(2026, 0, 24)
+    const today = new Date()
     return date.toDateString() === today.toDateString()
+  }
+
+  // Calculate Stats for Visible Week
+  const getWeeklyStats = () => {
+    let total = 0
+    let approved = 0
+    let pending = 0
+
+    const startStr = formatDateKey(weekDates[0])
+    const endStr = formatDateKey(weekDates[6])
+
+    // Filter bookings within this week range
+    const weeklyBookings = bookings.filter(b => b.date >= startStr && b.date <= endStr)
+
+    total = weeklyBookings.length
+    approved = weeklyBookings.filter(b => b.status === 'approved').length
+    pending = weeklyBookings.filter(b => b.status === 'pending').length
+
+    return { total, approved, pending }
+  }
+
+  const stats = getWeeklyStats()
+
+  if (loading) {
+    return (
+      <AdminLayout title="Schedule Overview">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-muted-foreground animate-pulse">Loading schedule...</p>
+        </div>
+      </AdminLayout>
+    )
   }
 
   return (
@@ -180,8 +206,8 @@ export default function SchedulePage() {
                 Room
               </div>
               {weekDates.map((date, idx) => (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className={`p-4 text-center border-r border-border last:border-r-0 ${isToday(date) ? 'bg-primary/10' : ''}`}
                 >
                   <p className={`text-sm font-medium ${isToday(date) ? 'text-primary' : 'text-foreground'}`}>
@@ -197,32 +223,48 @@ export default function SchedulePage() {
             </div>
 
             {/* Room Rows */}
-            {rooms.map((room, roomIdx) => (
-              <div key={room} className={`grid grid-cols-8 border-b border-border last:border-b-0 ${roomIdx % 2 === 0 ? 'bg-white' : 'bg-secondary/20'}`}>
-                <div className="p-4 text-sm font-medium text-foreground border-r border-border flex items-start">
-                  {room}
-                </div>
-                {weekDates.map((date, dateIdx) => {
-                  const bookings = getBookingsForCell(date, room)
-                  return (
-                    <div 
-                      key={dateIdx} 
-                      className={`p-2 border-r border-border last:border-r-0 min-h-[80px] ${isToday(date) ? 'bg-primary/5' : ''}`}
-                    >
-                      {bookings.map((booking, bIdx) => (
-                        <div
-                          key={bIdx}
-                          className={`p-2 rounded text-xs mb-1 last:mb-0 ${getStatusColor(booking.status)}`}
-                        >
-                          <p className="font-medium truncate">{booking.title}</p>
-                          <p className="opacity-80">{booking.startTime} - {booking.endTime}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )
-                })}
+            {rooms.length === 0 ? (
+              <div className="p-8 text-center text-muted-foreground">
+                No active rooms found. Please add rooms in Rooms Management.
               </div>
-            ))}
+            ) : (
+              rooms.map((room, roomIdx) => (
+                <div key={room.id} className={`grid grid-cols-8 border-b border-border last:border-b-0 ${roomIdx % 2 === 0 ? 'bg-white' : 'bg-secondary/20'}`}>
+                  <div className="p-4 text-sm font-medium text-foreground border-r border-border flex items-start">
+                    {room.name}
+                  </div>
+                  {weekDates.map((date, dateIdx) => {
+                    const cellBookings = getCellBookings(date, room.name)
+                    return (
+                      <div
+                        key={dateIdx}
+                        className={`p-2 border-r border-border last:border-r-0 min-h-[100px] ${isToday(date) ? 'bg-primary/5' : ''}`}
+                      >
+                        {cellBookings.length > 0 ? (
+                          cellBookings.map((booking, bIdx) => (
+                            <div
+                              key={booking.id}
+                              className={`p-2 rounded text-xs mb-1 last:mb-0 shadow-sm border ${getStatusColor(booking.status)}`}
+                              title={`${booking.purpose} (${booking.user_email})`}
+                            >
+                              <p className="font-bold truncate">{booking.purpose || 'No Title'}</p>
+                              <p className="opacity-90 text-[10px]">
+                                {formatTimeDisplay(booking.start_time)} - {formatTimeDisplay(booking.end_time)}
+                              </p>
+                              <p className="opacity-75 text-[10px] truncate">{booking.profiles?.full_name}</p>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="h-full w-full opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                            {/* Optional: could add a 'plus' icon to quick-add booking here */}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -232,28 +274,19 @@ export default function SchedulePage() {
         <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
           <p className="text-sm text-muted-foreground mb-1">This Week's Bookings</p>
           <p className="text-3xl font-bold text-foreground">
-            {weekDates.reduce((sum, date) => {
-              const dateKey = formatDateKey(date)
-              return sum + (bookingData[dateKey]?.length || 0)
-            }, 0)}
+            {stats.total}
           </p>
         </div>
         <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
           <p className="text-sm text-muted-foreground mb-1">Approved Bookings</p>
           <p className="text-3xl font-bold text-green-600">
-            {weekDates.reduce((sum, date) => {
-              const dateKey = formatDateKey(date)
-              return sum + (bookingData[dateKey]?.filter(b => b.status === 'Approved').length || 0)
-            }, 0)}
+            {stats.approved}
           </p>
         </div>
         <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
           <p className="text-sm text-muted-foreground mb-1">Pending Approvals</p>
           <p className="text-3xl font-bold text-accent">
-            {weekDates.reduce((sum, date) => {
-              const dateKey = formatDateKey(date)
-              return sum + (bookingData[dateKey]?.filter(b => b.status === 'Pending').length || 0)
-            }, 0)}
+            {stats.pending}
           </p>
         </div>
       </div>

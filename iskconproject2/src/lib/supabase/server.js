@@ -1,12 +1,16 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-export async function createSupabaseServerClient() {
-  const cookieStore = await cookies(); // MUST be awaited in Next 16
+export async function createSupabaseServerClient(options = {}) {
+  const cookieStore = await cookies();
+
+  const supabaseKey = options.admin
+    ? process.env.SUPABASE_SERVICE_ROLE_KEY // 🔑 ADMIN
+    : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY; // 👤 USER
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    supabaseKey,
     {
       cookies: {
         getAll: () => cookieStore.getAll(),

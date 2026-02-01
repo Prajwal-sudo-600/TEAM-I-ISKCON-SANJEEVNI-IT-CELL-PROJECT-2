@@ -1,18 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import BackButton from '../components/layout/BackButton'
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react'
-
-const bookingsData = [
-  { date: '2026-01-25', room: 'Conference Room A', time: '09:00 AM', purpose: 'Seva Meeting', status: 'approved' },
-  { date: '2026-01-25', room: 'Meeting Room B', time: '02:00 PM', purpose: 'IT Training', status: 'pending' },
-  { date: '2026-01-26', room: 'Hall C', time: '10:00 AM', purpose: 'Orientation', status: 'approved' },
-  { date: '2026-01-27', room: 'Training Room D', time: '03:00 PM', purpose: 'Workshop', status: 'approved' },
-  { date: '2026-01-28', room: 'Board Room F', time: '11:00 AM', purpose: 'Meeting', status: 'pending' },
-  { date: '2026-01-30', room: 'Conference Room A', time: '04:00 PM', purpose: 'Review', status: 'approved' },
-]
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { getCalendarBookings } from '@/actions/calenderActions'
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const timeSlots = [
@@ -21,14 +13,48 @@ const timeSlots = [
 ]
 
 export default function CalendarPage() {
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 0, 25))
+  const [currentDate, setCurrentDate] = useState(new Date())
   const [view, setView] = useState('week')
+  const [bookingsData, setBookingsData] = useState([])
+  const [loading, setLoading] = useState(true)
 
+  /* ---------------- FETCH BOOKINGS ---------------- */
+  useEffect(() => {
+    const fetchBookings = async () => {
+      const res = await getCalendarBookings()
+      console.log("CALENDAR BOOKINGS:", res)
+
+      if (res.success && res.data) {
+        const mapped = res.data.map(b => {
+          const startHour = b.start_time.slice(0, 2)
+          const ampm = Number(startHour) >= 12 ? 'PM' : 'AM'
+          const hour12 = ((Number(startHour) + 11) % 12 + 1)
+          const formattedTime = `${hour12.toString().padStart(2, '0')}:00 ${ampm}`
+
+          return {
+            date: b.date,
+            room: b.rooms?.name || 'Room',
+            time: formattedTime,
+            purpose: b.purpose,
+            status: b.status?.toLowerCase() || 'pending'
+          }
+        })
+
+        setBookingsData(mapped)
+      }
+
+      setLoading(false)
+    }
+
+    fetchBookings()
+  }, [])
+
+  /* ---------------- DATE HELPERS ---------------- */
   const getWeekDates = (date) => {
     const startOfWeek = new Date(date)
     const day = startOfWeek.getDay()
     startOfWeek.setDate(startOfWeek.getDate() - day)
-    
+
     const dates = []
     for (let i = 0; i < 7; i++) {
       const d = new Date(startOfWeek)
@@ -40,9 +66,7 @@ export default function CalendarPage() {
 
   const weekDates = getWeekDates(currentDate)
 
-  const formatDate = (date) => {
-    return date.toISOString().split('T')[0]
-  }
+  const formatDate = (date) => date.toISOString().split('T')[0]
 
   const getBookingsForDate = (date) => {
     const dateStr = formatDate(date)
@@ -61,120 +85,79 @@ export default function CalendarPage() {
     setCurrentDate(newDate)
   }
 
-  const goToToday = () => {
-    setCurrentDate(new Date(2026, 0, 24))
-  }
+  const goToToday = () => setCurrentDate(new Date())
 
   const monthYear = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="p-10 text-center">Loading Calendar...</div>
+      </DashboardLayout>
+    )
+  }
 
   return (
     <DashboardLayout>
       <div className="max-w-7xl mx-auto">
         <BackButton />
-        
+
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-peacock mb-2">Calendar</h1>
           <p className="text-muted-foreground">View your bookings schedule</p>
         </div>
 
-        {/* Calendar Header */}
+        {/* HEADER */}
         <div className="bg-white rounded-xl p-4 shadow-sm border border-gold/50 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            {/* View Toggle */}
+
             <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
-              <button
-                onClick={() => setView('week')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  view === 'week' ? 'bg-white text-peacock shadow-sm' : 'text-muted-foreground'
-                }`}
-              >
+              <button onClick={() => setView('week')}
+                className={`px-4 py-2 rounded-md text-sm font-medium ${view === 'week' ? 'bg-white text-peacock shadow-sm' : ''}`}>
                 Week
               </button>
-              <button
-                onClick={() => setView('day')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  view === 'day' ? 'bg-white text-peacock shadow-sm' : 'text-muted-foreground'
-                }`}
-              >
+              <button onClick={() => setView('day')}
+                className={`px-4 py-2 rounded-md text-sm font-medium ${view === 'day' ? 'bg-white text-peacock shadow-sm' : ''}`}>
                 Day
               </button>
             </div>
 
-            {/* Navigation */}
             <div className="flex items-center gap-3">
-              <button
-                onClick={goToToday}
-                className="px-4 py-2 border border-peacock text-peacock rounded-lg hover:bg-peacock hover:text-white transition-all text-sm font-medium"
-              >
+              <button onClick={goToToday}
+                className="px-4 py-2 border border-peacock text-peacock rounded-lg hover:bg-peacock hover:text-white text-sm">
                 Today
               </button>
+
               <div className="flex items-center gap-1">
-                <button
-                  onClick={() => view === 'week' ? navigateWeek(-1) : navigateDay(-1)}
-                  className="p-2 rounded-lg hover:bg-muted transition-colors"
-                >
-                  <ChevronLeft className="w-5 h-5 text-foreground" />
+                <button onClick={() => view === 'week' ? navigateWeek(-1) : navigateDay(-1)}>
+                  <ChevronLeft className="w-5 h-5" />
                 </button>
-                <span className="font-semibold text-foreground min-w-[180px] text-center">
-                  {monthYear}
-                </span>
-                <button
-                  onClick={() => view === 'week' ? navigateWeek(1) : navigateDay(1)}
-                  className="p-2 rounded-lg hover:bg-muted transition-colors"
-                >
-                  <ChevronRight className="w-5 h-5 text-foreground" />
+                <span className="font-semibold min-w-[180px] text-center">{monthYear}</span>
+                <button onClick={() => view === 'week' ? navigateWeek(1) : navigateDay(1)}>
+                  <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Calendar Grid */}
-        {view === 'week' ? (
+        {/* WEEK VIEW */}
+        {view === 'week' && (
           <div className="bg-white rounded-xl shadow-sm border border-gold/50 overflow-hidden">
-            {/* Week Header */}
-            <div className="grid grid-cols-8 border-b border-gold/50">
-              <div className="p-3 bg-muted/30" />
-              {weekDates.map((date, index) => {
-                const isToday = formatDate(date) === formatDate(new Date(2026, 0, 24))
-                return (
-                  <div 
-                    key={index}
-                    className={`p-3 text-center border-l border-gold/50 ${isToday ? 'bg-peacock/5' : ''}`}
-                  >
-                    <p className="text-xs text-muted-foreground">{daysOfWeek[date.getDay()]}</p>
-                    <p className={`text-lg font-semibold ${isToday ? 'text-peacock' : 'text-foreground'}`}>
-                      {date.getDate()}
-                    </p>
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* Time Slots */}
-            {timeSlots.map((time, timeIndex) => (
-              <div key={time} className="grid grid-cols-8 border-b border-gold/30 last:border-0">
-                <div className="p-3 text-xs text-muted-foreground bg-muted/30 flex items-center justify-center">
-                  {time}
-                </div>
-                {weekDates.map((date, dateIndex) => {
+            {timeSlots.map(time => (
+              <div key={time} className="grid grid-cols-8 border-b">
+                <div className="p-3 text-xs bg-muted/30">{time}</div>
+                {weekDates.map((date, idx) => {
                   const bookings = getBookingsForDate(date).filter(b => b.time === time)
-                  const isToday = formatDate(date) === formatDate(new Date(2026, 0, 24))
-                  
                   return (
-                    <div 
-                      key={dateIndex}
-                      className={`p-2 border-l border-gold/30 min-h-[60px] ${isToday ? 'bg-peacock/5' : ''}`}
-                    >
+                    <div key={idx} className="p-2 min-h-[60px] border-l">
                       {bookings.map((booking, i) => (
-                        <div 
-                          key={i}
+                        <div key={i}
                           className={`text-xs p-2 rounded mb-1 ${
-                            booking.status === 'approved' 
-                              ? 'bg-green-100 text-green-700 border border-green-200'
-                              : 'bg-saffron/20 text-saffron border border-saffron/30'
-                          }`}
-                        >
+                            booking.status === 'approved'
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-yellow-100 text-yellow-700'
+                          }`}>
                           <p className="font-medium truncate">{booking.room}</p>
                           <p className="truncate opacity-80">{booking.purpose}</p>
                         </div>
@@ -185,62 +168,7 @@ export default function CalendarPage() {
               </div>
             ))}
           </div>
-        ) : (
-          /* Day View */
-          <div className="bg-white rounded-xl shadow-sm border border-gold/50 overflow-hidden">
-            <div className="p-4 bg-muted/30 border-b border-gold/50">
-              <p className="font-semibold text-foreground text-center">
-                {currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-              </p>
-            </div>
-            <div className="divide-y divide-gold/30">
-              {timeSlots.map((time) => {
-                const bookings = getBookingsForDate(currentDate).filter(b => b.time === time)
-                
-                return (
-                  <div key={time} className="flex">
-                    <div className="w-24 p-4 text-sm text-muted-foreground bg-muted/30 flex items-start justify-center shrink-0">
-                      {time}
-                    </div>
-                    <div className="flex-1 p-4 min-h-[80px]">
-                      {bookings.length > 0 ? (
-                        bookings.map((booking, i) => (
-                          <div 
-                            key={i}
-                            className={`p-3 rounded-lg ${
-                              booking.status === 'approved' 
-                                ? 'bg-green-100 text-green-700 border border-green-200'
-                                : 'bg-saffron/20 text-saffron border border-saffron/30'
-                            }`}
-                          >
-                            <p className="font-semibold">{booking.room}</p>
-                            <p className="text-sm opacity-80">{booking.purpose}</p>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="h-full flex items-center justify-center text-sm text-muted-foreground opacity-50">
-                          Available
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
         )}
-
-        {/* Legend */}
-        <div className="mt-6 flex items-center justify-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-green-100 border border-green-200" />
-            <span className="text-sm text-muted-foreground">Approved</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-saffron/20 border border-saffron/30" />
-            <span className="text-sm text-muted-foreground">Pending</span>
-          </div>
-        </div>
       </div>
     </DashboardLayout>
   )

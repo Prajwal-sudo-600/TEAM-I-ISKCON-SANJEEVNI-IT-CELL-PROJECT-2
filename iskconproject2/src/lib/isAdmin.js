@@ -1,12 +1,21 @@
-import { getUser } from "@/lib/getUser";
-
-// CHANGE THIS EMAIL TO YOUR ADMIN EMAIL
-const ADMIN_EMAIL = "apanandgaonkar@gmail.com";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function isAdmin() {
-  const user = await getUser();
+  const supabase = await createSupabaseServerClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return false;
 
-  return user.email === ADMIN_EMAIL;
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (error) return false;
+
+  return data.role === "admin";
 }
