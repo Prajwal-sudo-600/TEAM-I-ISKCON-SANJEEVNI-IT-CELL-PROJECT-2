@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 /* =========================
-   GET CURRENT PROFILE
+   
 ========================= */
 export async function getCurrentProfile() {
     const supabase = await createSupabaseServerClient()
@@ -51,7 +51,7 @@ export async function getCurrentProfile() {
 }
 
 /* =========================
-   UPDATE PROFILE
+   UPDATE PROFILE MAIN
 ========================= */
 export async function updateProfile(formData) {
     const supabase = await createSupabaseServerClient()
@@ -84,7 +84,7 @@ export async function updateProfile(formData) {
 }
 
 /* =========================
-   UPDATE EMAIL
+   UPDATE EMAIL DONE
 ========================= */
 export async function updateEmail(newEmail) {
     const supabase = await createSupabaseServerClient()
@@ -101,7 +101,7 @@ export async function updateEmail(newEmail) {
 }
 
 /* =========================
-   UPDATE PASSWORD
+   UPDATE PASSWORD SET
 ========================= */
 export async function updatePassword(currentPassword, newPassword) {
     // Note: Supabase updateUser doesn't require current password if logged in, 
@@ -131,11 +131,7 @@ export async function getUserStats() {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return { success: false, error: 'Unauthorized' }
 
-        // We are assuming admin wants stats for ALL bookings or THEIR bookings?
-        // Usually Admin Profile shows system stats or their own activity.
-        // Let's assume Admin wants to see Global Stats since they are Admin.
-
-        // Count total
+    
         const { count: total, error: err1 } = await supabase
             .from('bookings').select('*', { count: 'exact', head: true })
 
