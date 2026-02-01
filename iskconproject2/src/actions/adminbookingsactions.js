@@ -3,7 +3,7 @@
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
-/* ---------------- APPROVE BOOKING ---------------- */
+
 export async function approveBooking(bookingId) {
     // 🔑 MUST be admin to bypass RLS
     const supabase = await createSupabaseServerClient({ admin: true })
@@ -29,7 +29,7 @@ export async function approveBooking(bookingId) {
     return { success: true }
 }
 
-/* ---------------- REJECT BOOKING ---------------- */
+
 export async function rejectBooking(bookingId, reason) {
     // 🔑 MUST be admin to bypass RLS
     const supabase = await createSupabaseServerClient({ admin: true })
@@ -59,7 +59,7 @@ export async function rejectBooking(bookingId, reason) {
     return { success: true }
 }
 
-/* ---------------- DELETE BOOKING ---------------- */
+
 export async function deleteBooking(bookingId) {
     // 🔑 MUST be admin to bypass RLS
     const supabase = await createSupabaseServerClient({ admin: true })
@@ -83,7 +83,7 @@ export async function deleteBooking(bookingId) {
     return { success: true }
 }
 
-/* ---------------- GET ALL BOOKINGS (UNCHANGED) ---------------- */
+
 export async function getBookings() {
     try {
         const supabase = await createSupabaseServerClient({ admin: true })
@@ -115,7 +115,7 @@ export async function getBookings() {
             .order('created_at', { ascending: false })
 
         if (error) {
-            console.error('Admin booking fetch error:', error)
+            console.error('Admin booking fetch error:', error.message, error.details, error.hint)
             return { success: false, data: [] }
         }
 

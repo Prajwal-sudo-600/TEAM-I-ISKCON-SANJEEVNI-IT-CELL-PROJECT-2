@@ -2,23 +2,19 @@
 
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
-/* =========================
-   GET PROFILE
-========================= */
+
 export async function getProfile() {
   const supabase = await createSupabaseServerClient()
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { success: false, data: null }
 
-  // 1. Try fetch
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single()
 
-  // 2. If profile DOES NOT EXIST → create it
   if (error && error.code === 'PGRST116') {
     const { data: newProfile, error: insertError } = await supabase
       .from('profiles')
@@ -34,7 +30,7 @@ export async function getProfile() {
       return { success: false, data: null }
     }
 
-    // 🔵 MERGE AUTH EMAIL
+
     return {
       success: true,
       data: {
@@ -49,7 +45,7 @@ export async function getProfile() {
     return { success: false, data: null }
   }
 
-  // 🔵 MERGE AUTH EMAIL EVEN IF PROFILE EXISTS
+
   return {
     success: true,
     data: {
@@ -61,9 +57,7 @@ export async function getProfile() {
 
 
 
-/* =========================
-   UPSERT PROFILE
-========================= */
+
 export async function upsertProfile(profileData) {
   try {
     const supabase = await createSupabaseServerClient()
@@ -75,6 +69,7 @@ export async function upsertProfile(profileData) {
       id: user.id,
       full_name: profileData.full_name,
       phone: profileData.phone, // MATCHES DB
+      address: profileData.address,
       updated_at: new Date().toISOString()
     }
 

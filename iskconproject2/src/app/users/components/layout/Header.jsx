@@ -21,7 +21,7 @@ export default function Header({ onNotificationClick, showNotifications, notific
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const pathname = usePathname()
   const pageTitle = pageNames[pathname] || 'Dashboard'
-  
+
   const unreadCount = notifications?.filter(n => !n.read).length || 0
   const router = useRouter();
 
@@ -46,7 +46,7 @@ export default function Header({ onNotificationClick, showNotifications, notific
       {/* Right Side Actions */}
       <div className="flex items-center gap-4">
         {/* Notification Bell */}
-        <button 
+        <button
           onClick={onNotificationClick}
           className="relative p-2 rounded-lg hover:bg-muted transition-colors"
           aria-label="Notifications"
@@ -59,7 +59,7 @@ export default function Header({ onNotificationClick, showNotifications, notific
 
         {/* Profile Dropdown */}
         <div className="relative">
-          <button 
+          <button
             onClick={() => setShowProfileMenu(!showProfileMenu)}
             className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted transition-colors"
           >
@@ -72,12 +72,12 @@ export default function Header({ onNotificationClick, showNotifications, notific
 
           {showProfileMenu && (
             <>
-              <div 
-                className="fixed inset-0 z-40" 
-                onClick={() => setShowProfileMenu(false)} 
+              <div
+                className="fixed inset-0 z-40"
+                onClick={() => setShowProfileMenu(false)}
               />
               <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gold z-50 py-2">
-                <Link 
+                <Link
                   href="/users/profile"
                   className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
                   onClick={() => setShowProfileMenu(false)}
@@ -85,19 +85,6 @@ export default function Header({ onNotificationClick, showNotifications, notific
                   <Settings className="w-4 h-4 text-peacock" />
                   Profile Settings
                 </Link>
-                <div className="h-px bg-gold my-1" />
-                <button
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-muted transition-colors"
-                  onClick={() => {
-                    setShowProfileMenu(false)
-                    // In a real app, this would clear session/auth state
-                    router.push("/");
-                    alert('You have been logged out successfully.')
-                  }}
-                >
-                  <LogOut className="w-4 h-4" />
-                  Logout
-                </button>
               </div>
             </>
           )}
@@ -105,8 +92,8 @@ export default function Header({ onNotificationClick, showNotifications, notific
       </div>
 
       {/* Notification Panel */}
-      <NotificationPanel 
-        isOpen={showNotifications} 
+      <NotificationPanel
+        isOpen={showNotifications}
         onClose={onNotificationClick}
         notifications={notifications}
         onMarkAllRead={onMarkAllRead}

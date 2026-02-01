@@ -1,12 +1,12 @@
 "use client"
 
 import { usePathname, useRouter } from 'next/navigation'
-import { 
-  LayoutDashboard, 
-  CalendarCheck, 
-  DoorOpen, 
-  Package, 
-  Calendar, 
+import {
+  LayoutDashboard,
+  CalendarCheck,
+  DoorOpen,
+  Package,
+  Calendar,
   User,
   LogOut
 } from 'lucide-react'
@@ -20,6 +20,10 @@ const navItems = [
   { name: 'Admin Profile', href: '/admin/profile', icon: User },
 ]
 
+import { logout } from '@/actions/adminProfileActions'
+
+// ...
+
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
@@ -28,8 +32,8 @@ export default function Sidebar() {
     router.push(href)
   }
 
-  const handleLogout = () => {
-    router.push('/')
+  const handleLogout = async () => {
+    await logout()
   }
 
   return (
@@ -57,11 +61,10 @@ export default function Sidebar() {
               <li key={item.name}>
                 <button
                   onClick={() => handleNavigation(item.href)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                    isActive 
-                      ? 'bg-white/20 text-white' 
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
+                      ? 'bg-white/20 text-white'
                       : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-white'
-                  }`}
+                    }`}
                 >
                   <Icon className="w-5 h-5" />
                   {item.name}

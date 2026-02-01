@@ -4,9 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-/* =========================
-   
-========================= */
+
 export async function getCurrentProfile() {
     const supabase = await createSupabaseServerClient()
 
@@ -50,9 +48,7 @@ export async function getCurrentProfile() {
     }
 }
 
-/* =========================
-   UPDATE PROFILE MAIN
-========================= */
+
 export async function updateProfile(formData) {
     const supabase = await createSupabaseServerClient()
 
@@ -62,7 +58,9 @@ export async function updateProfile(formData) {
 
         const updates = {
             full_name: formData.full_name,
-            contact_number: formData.contact_number,
+            full_name: formData.full_name,
+            phone: formData.contact_number,
+            address: formData.address,
             address: formData.address,
             updated_at: new Date().toISOString()
         }
@@ -83,9 +81,7 @@ export async function updateProfile(formData) {
     }
 }
 
-/* =========================
-   UPDATE EMAIL DONE
-========================= */
+
 export async function updateEmail(newEmail) {
     const supabase = await createSupabaseServerClient()
 
@@ -100,9 +96,7 @@ export async function updateEmail(newEmail) {
     }
 }
 
-/* =========================
-   UPDATE PASSWORD SET
-========================= */
+
 export async function updatePassword(currentPassword, newPassword) {
     // Note: Supabase updateUser doesn't require current password if logged in, 
     // but good practice might involve re-auth if strict security needed. 
@@ -121,9 +115,7 @@ export async function updatePassword(currentPassword, newPassword) {
     }
 }
 
-/* =========================
-   GET USER STATS
-========================= */
+
 export async function getUserStats() {
     const supabase = await createSupabaseServerClient()
 
@@ -131,7 +123,7 @@ export async function getUserStats() {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return { success: false, error: 'Unauthorized' }
 
-    
+
         const { count: total, error: err1 } = await supabase
             .from('bookings').select('*', { count: 'exact', head: true })
 
@@ -167,9 +159,7 @@ export async function getUserStats() {
     }
 }
 
-/* =========================
-   GET RECENT ACTIVITY
-========================= */
+
 export async function getUserActivity(limit = 5) {
     const supabase = await createSupabaseServerClient()
 
@@ -202,9 +192,7 @@ export async function getUserActivity(limit = 5) {
     }
 }
 
-/* =========================
-   LOGOUT
-========================= */
+
 export async function logout() {
     const supabase = await createSupabaseServerClient()
     await supabase.auth.signOut()

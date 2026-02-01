@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import BackButton from '../components/layout/BackButton'
 import { Check } from 'lucide-react'
-import { getProfile, upsertProfile, logout } from '@/actions/userProfileActions'
+import { getProfile, upsertProfile } from '@/actions/userProfileActions'
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
@@ -24,7 +24,7 @@ export default function ProfilePage() {
       const mapped = {
         name: res?.data?.full_name || '',
         email: res?.data?.email || 'Not set',
-        phone: res?.data?.contact_number || '',
+        phone: res?.data?.phone || '',
         address: res?.data?.address || '',
         joinedDate: 'Recently'
       }
@@ -56,6 +56,7 @@ export default function ProfilePage() {
     const res = await upsertProfile({
       full_name: editData.name,
       phone: editData.phone,
+      address: editData.address,
     })
 
     if (res.success) {
@@ -72,10 +73,7 @@ export default function ProfilePage() {
     setEditData(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleLogout = async () => {
-    await logout()
-    window.location.href = '/login'
-  }
+
 
   if (loading) return <p className="p-6">Loading...</p>
   if (!userData) return <p className="p-6">Profile not found</p>
@@ -175,12 +173,7 @@ export default function ProfilePage() {
         </div>
 
         {/* LOGOUT */}
-        <button
-          onClick={handleLogout}
-          className="text-red-600 font-medium"
-        >
-          Logout
-        </button>
+
       </div>
     </DashboardLayout>
   )

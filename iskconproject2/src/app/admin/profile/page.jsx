@@ -9,7 +9,6 @@ import {
   updateProfile,
   updateEmail,
   updatePassword,
-  logout,
   getUserStats,
   getUserActivity
 } from '@/actions/adminProfileActions'
@@ -22,7 +21,6 @@ export default function ProfilePage() {
   const [activity, setActivity] = useState([])
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({})
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -45,7 +43,7 @@ export default function ProfilePage() {
       setProfile(result.data)
       setFormData({
         full_name: result.data.full_name || '',
-        contact_number: result.data.contact_number || '',
+        contact_number: result.data.phone || '', // Reading phone column
         address: result.data.address || ''
       })
     } else {
@@ -160,14 +158,7 @@ export default function ProfilePage() {
     setActionLoading(false)
   }
 
-  const handleLogout = () => {
-    setShowLogoutConfirm(true)
-  }
 
-  const confirmLogout = async () => {
-    setActionLoading(true)
-    await logout()
-  }
 
   const getInitials = (name) => {
     if (!name) return 'U'
@@ -400,16 +391,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Logout Button */}
-            <div className="mt-6">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-card border border-red-200 rounded-xl text-red-600 font-medium hover:bg-red-50 transition-colors"
-                disabled={actionLoading}
-              >
-                <LogOut className="w-5 h-5" />
-                Logout
-              </button>
-            </div>
+
           </div>
 
           {/* Right Column - Stats & Activity */}
@@ -458,8 +440,8 @@ export default function ProfilePage() {
                   {activity.map((item) => (
                     <div key={item.id} className="flex items-start gap-3 p-3 bg-secondary rounded-lg">
                       <div className={`w-2 h-2 rounded-full mt-1.5 ${item.status === 'Approved' ? 'bg-green-500' :
-                          item.status === 'Rejected' ? 'bg-red-500' :
-                            'bg-yellow-500'
+                        item.status === 'Rejected' ? 'bg-red-500' :
+                          'bg-yellow-500'
                         }`}></div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{item.room}</p>
@@ -468,8 +450,8 @@ export default function ProfilePage() {
                         </p>
                       </div>
                       <span className={`text-xs px-2 py-1 rounded-full ${item.status === 'Approved' ? 'bg-green-100 text-green-700' :
-                          item.status === 'Rejected' ? 'bg-red-100 text-red-700' :
-                            'bg-yellow-100 text-yellow-700'
+                        item.status === 'Rejected' ? 'bg-red-100 text-red-700' :
+                          'bg-yellow-100 text-yellow-700'
                         }`}>
                         {item.status}
                       </span>
@@ -494,35 +476,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Logout Confirmation Modal */}
-      {showLogoutConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-card rounded-xl border border-border shadow-lg max-w-sm w-full mx-4">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-2">Confirm Logout</h3>
-              <p className="text-sm text-muted-foreground">
-                Are you sure you want to logout from the admin dashboard?
-              </p>
-            </div>
-            <div className="p-6 border-t border-border flex justify-end gap-3">
-              <button
-                onClick={() => setShowLogoutConfirm(false)}
-                className="px-4 py-2 text-sm font-medium text-foreground bg-secondary rounded-lg hover:bg-secondary/80 transition-colors"
-                disabled={actionLoading}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmLogout}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
-                disabled={actionLoading}
-              >
-                {actionLoading ? 'Logging out...' : 'Logout'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* Password Change Modal */}
       {showPasswordModal && (

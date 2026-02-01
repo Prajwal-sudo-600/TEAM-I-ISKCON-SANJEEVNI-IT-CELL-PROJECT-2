@@ -2,15 +2,16 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { 
-  LayoutDashboard, 
-  DoorOpen, 
-  CalendarPlus, 
-  ClipboardList, 
-  Calendar, 
+import {
+  LayoutDashboard,
+  DoorOpen,
+  CalendarPlus,
+  ClipboardList,
+  Calendar,
   BookOpen,
   LogOut
 } from 'lucide-react'
+import { logout } from '@/actions/userProfileActions'
 
 const navItems = [
   { href: '/users', label: 'Dashboard', icon: LayoutDashboard },
@@ -24,6 +25,11 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname()
 
+  const handleLogout = async () => {
+    await logout()
+    window.location.href = '/login'
+  }
+
   return (
     <aside className="w-64 bg-white border-r border-gold min-h-[calc(100vh-4rem)] flex flex-col">
       <nav className="flex-1 p-4">
@@ -31,16 +37,15 @@ export default function Sidebar() {
           {navItems.map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
-            
+
             return (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                    isActive 
-                      ? 'bg-peacock text-white shadow-sm' 
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
+                      ? 'bg-peacock text-white shadow-sm'
                       : 'text-foreground hover:bg-saffron/10 hover:text-peacock'
-                  }`}
+                    }`}
                 >
                   <Icon className="w-5 h-5" />
                   <span className="font-medium">{item.label}</span>
@@ -53,13 +58,13 @@ export default function Sidebar() {
 
       {/* Bottom Section */}
       <div className="p-4 border-t border-gold">
-        <Link
-          href="/login"
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-all duration-200"
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-all duration-200"
         >
           <LogOut className="w-5 h-5" />
           <span className="font-medium">Logout</span>
-        </Link>
+        </button>
       </div>
     </aside>
   )

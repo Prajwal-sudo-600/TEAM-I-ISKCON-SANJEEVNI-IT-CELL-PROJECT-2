@@ -3,10 +3,12 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server"
 
 export async function getDashboardStats() {
-    const supabase = await createSupabaseServerClient()
+    const supabase = await createSupabaseServerClient({ admin: true })
 
     try {
         const today = new Date().toISOString().split('T')[0]
+
+        // ... existing queries ...
 
         // 1. Total Bookings
         const { count: totalBookings, error: bookingsError } = await supabase
@@ -42,30 +44,43 @@ export async function getDashboardStats() {
             .eq('date', today)
 
         // 7. Recent Bookings (Limit 5)
-        // Need to join with profiles and rooms to get names
-        const { data: recentBookings, error: recentError } = await supabase
+        // Fetch raw bookings first, then enrich with User data from Auth Admin
+        const { data: recentBookingsRaw, error: recentError } = await supabase
             .from('bookings')
             .select(`
         id,
+        user_id,
         status,
         date,
         created_at,
-        profiles ( full_name ),
         rooms ( name )
       `)
             .order('created_at', { ascending: false })
             .limit(5)
 
         if (bookingsError || roomsError || resourcesError || pendingError || usersError || todayError || recentError) {
-            console.error('Error fetching dashboard stats:', bookingsError || roomsError || resourcesError)
+            console.error('Error fetching dashboard stats:', bookingsError || roomsError || resourcesError || recentError)
             return { success: false, error: 'Failed to fetch stats' }
         }
 
-        /* -- Quick math for "Available Rooms" roughly --
-           (Ideally we check if they are booked *right now*, but for summary stats, 
-            Active Rooms is a good proxy, or Active Rooms - Occupied Now.
-            Let's just use Active Rooms count for now or a static placeholder)
-        */
+        // Enrich with User Details
+        const recentBookings = await Promise.all(recentBookingsRaw.map(async (b) => {
+            let userName = 'Unknown User'
+            if (b.user_id) {
+                const { data: { user }, error: uErr } = await supabase.auth.admin.getUserById(b.user_id)
+                if (user) {
+                    userName = user.user_metadata?.full_name || user.email || 'Unknown User'
+                }
+            }
+
+            return {
+                id: b.id,
+                user: userName,
+                room: b.rooms?.name || 'Unknown Room',
+                date: b.date,
+                status: b.status.charAt(0).toUpperCase() + b.status.slice(1)
+            }
+        }))
 
         return {
             success: true,
@@ -76,13 +91,7 @@ export async function getDashboardStats() {
                 pendingRequests: pendingRequests || 0,
                 activeUsers: activeUsers || 0,
                 todaysBookings: todaysBookings || 0,
-                recentBookings: recentBookings.map(b => ({
-                    id: b.id,
-                    user: b.profiles?.full_name || 'Unknown',
-                    room: b.rooms?.name || 'Unknown',
-                    date: b.date,
-                    status: b.status.charAt(0).toUpperCase() + b.status.slice(1) // Capitalize
-                }))
+                recentBookings: recentBookings
             }
         }
 

@@ -3,16 +3,14 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseAdmin } from "@/lib/supabase/admin"; // Import Admin Client
 
-/* =========================
-   SIGN UP USER
-========================= */
+
 export async function signUpUser(formdata) {
   const supabase = await createSupabaseServerClient();
   const supabaseAdmin = createSupabaseAdmin(); // Initialize Admin Client
 
-  const { fullName, email, phone, department, password } = formdata;
+  const { fullName, email, contactNumber, address, password } = formdata;
 
-  // 1️⃣ Create auth user
+
   const { data: authData, error: authError } =
     await supabase.auth.signUp({
       email,
@@ -20,8 +18,8 @@ export async function signUpUser(formdata) {
       options: {
         data: {
           full_name: fullName,
-          phone: phone,
-          department: department,
+          phone: contactNumber,
+          address: address,
         },
       },
     });
@@ -30,14 +28,14 @@ export async function signUpUser(formdata) {
 
   const userId = authData.user.id;
 
-  // 2️⃣ Create profile row (USING ADMIN CLIENT TO BYPASS RLS)
+
   const { error: profileError } = await supabaseAdmin
     .from("profiles")
     .insert({
       id: userId,
       full_name: fullName,
-      phone: phone,
-      department: department || null,
+      phone: contactNumber,
+      address: address,
       role: "user", // default
     });
 
@@ -46,9 +44,7 @@ export async function signUpUser(formdata) {
   return { success: true };
 }
 
-/* =========================
-   GET USER ROLE (SAFE)
-========================= */
+
 export async function getUserRole() {
   const supabase = await createSupabaseServerClient();
 
