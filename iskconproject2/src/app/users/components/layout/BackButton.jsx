@@ -9,7 +9,7 @@ export default function BackButton() {
   return (
     <button
       onClick={() => router.back()}
-      className="flex items-center gap-2 px-4 py-2 text-peacock border border-peacock rounded-lg hover:bg-peacock hover:text-white transition-all duration-200 mb-6"
+      className="flex items-center gap-2 px-4 py-2 text-primary border border-primary rounded-lg hover:bg-primary hover:text-primary-foreground transition-all duration-200 mb-6"
     >
       <ArrowLeft className="w-4 h-4" />
       <span className="font-medium">Back</span>

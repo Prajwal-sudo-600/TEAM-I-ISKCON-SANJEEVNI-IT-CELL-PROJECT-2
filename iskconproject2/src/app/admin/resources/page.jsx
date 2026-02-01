@@ -1,8 +1,8 @@
 "use server"
 
 import AdminLayout from '@/app/admin/components/admin/admin-layout'
-import { getResources } from '@/actions/adminresourcesactions'
-import { getRooms } from '@/actions/adminroomsactions'
+import { getResources } from '@/actions/admin/adminresourcesactions'
+import { getRooms } from '@/actions/admin/adminroomsactions'
 import ResourcesClient from './ResourcesClient'
 
 export default async function ResourcesPage() {

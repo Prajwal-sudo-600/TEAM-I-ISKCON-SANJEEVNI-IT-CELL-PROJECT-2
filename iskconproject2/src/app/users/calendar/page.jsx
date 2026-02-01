@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import BackButton from '../components/layout/BackButton'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { getCalendarBookings } from '@/actions/calenderActions'
+import { getCalendarBookings } from '@/actions/user/calenderActions'
 
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const timeSlots = [
@@ -103,28 +103,28 @@ export default function CalendarPage() {
         <BackButton />
 
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-peacock mb-2">Calendar</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Calendar</h1>
           <p className="text-muted-foreground">View your bookings schedule</p>
         </div>
 
         {/* HEADER */}
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gold/50 mb-6">
+        <div className="bg-card rounded-xl p-4 shadow-sm border border-border mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 
             <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
               <button onClick={() => setView('week')}
-                className={`px-4 py-2 rounded-md text-sm font-medium ${view === 'week' ? 'bg-white text-peacock shadow-sm' : ''}`}>
+                className={`px-4 py-2 rounded-md text-sm font-medium ${view === 'week' ? 'bg-card text-primary shadow-sm' : ''}`}>
                 Week
               </button>
               <button onClick={() => setView('day')}
-                className={`px-4 py-2 rounded-md text-sm font-medium ${view === 'day' ? 'bg-white text-peacock shadow-sm' : ''}`}>
+                className={`px-4 py-2 rounded-md text-sm font-medium ${view === 'day' ? 'bg-card text-primary shadow-sm' : ''}`}>
                 Day
               </button>
             </div>
 
             <div className="flex items-center gap-3">
               <button onClick={goToToday}
-                className="px-4 py-2 border border-peacock text-peacock rounded-lg hover:bg-peacock hover:text-white text-sm">
+                className="px-4 py-2 border border-primary text-primary rounded-lg hover:bg-primary hover:text-primary-foreground text-sm">
                 Today
               </button>
 
@@ -143,7 +143,7 @@ export default function CalendarPage() {
 
         {/* WEEK VIEW */}
         {view === 'week' && (
-          <div className="bg-white rounded-xl shadow-sm border border-gold/50 overflow-hidden">
+          <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
             {timeSlots.map(time => (
               <div key={time} className="grid grid-cols-8 border-b">
                 <div className="p-3 text-xs bg-muted/30">{time}</div>
@@ -153,11 +153,10 @@ export default function CalendarPage() {
                     <div key={idx} className="p-2 min-h-[60px] border-l">
                       {bookings.map((booking, i) => (
                         <div key={i}
-                          className={`text-xs p-2 rounded mb-1 ${
-                            booking.status === 'approved'
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-yellow-100 text-yellow-700'
-                          }`}>
+                          className={`text-xs p-2 rounded mb-1 ${booking.status === 'approved'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-yellow-100 text-yellow-700'
+                            }`}>
                           <p className="font-medium truncate">{booking.room}</p>
                           <p className="truncate opacity-80">{booking.purpose}</p>
                         </div>

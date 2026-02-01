@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import AdminLayout from '@/app/admin/components/admin/admin-layout'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { getRooms } from '@/actions/adminroomsactions'
-import { getBookings } from '@/actions/adminbookingsactions'
+import { getRooms } from '@/actions/admin/adminroomsactions'
+import { getBookings } from '@/actions/admin/adminbookingsactions'
 
 export default function SchedulePage() {
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -229,7 +229,7 @@ export default function SchedulePage() {
               </div>
             ) : (
               rooms.map((room, roomIdx) => (
-                <div key={room.id} className={`grid grid-cols-8 border-b border-border last:border-b-0 ${roomIdx % 2 === 0 ? 'bg-white' : 'bg-secondary/20'}`}>
+                <div key={room.id} className={`grid grid-cols-8 border-b border-border last:border-b-0 ${roomIdx % 2 === 0 ? 'bg-card' : 'bg-secondary/20'}`}>
                   <div className="p-4 text-sm font-medium text-foreground border-r border-border flex items-start">
                     {room.name}
                   </div>
@@ -279,7 +279,7 @@ export default function SchedulePage() {
         </div>
         <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
           <p className="text-sm text-muted-foreground mb-1">Approved Bookings</p>
-          <p className="text-3xl font-bold text-green-600">
+          <p className="text-3xl font-bold text-green-600 dark:text-green-400">
             {stats.approved}
           </p>
         </div>

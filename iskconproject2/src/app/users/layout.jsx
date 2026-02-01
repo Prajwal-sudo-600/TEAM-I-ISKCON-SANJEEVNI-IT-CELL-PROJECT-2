@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/next";
 import { redirect } from "next/navigation";
 import { getUser } from "@/lib/getUser";
+import { ThemeProvider } from "@/context/ThemeContext";
 import "./globals.css";
 
 export const metadata = {
@@ -18,9 +19,9 @@ export default async function UsersLayout({ children }) {
   }
 
   return (
-    <>
+    <ThemeProvider>
       {children}
       <Analytics />
-    </>
+    </ThemeProvider>
   );
 }

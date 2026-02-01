@@ -62,9 +62,9 @@ export default function GuidelinesPage() {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto">
         <BackButton />
-        
+
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-peacock mb-2">Guidelines</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Guidelines</h1>
           <p className="text-muted-foreground">Room booking and usage guidelines for all devotees</p>
         </div>
 
@@ -73,12 +73,12 @@ export default function GuidelinesPage() {
           {guidelinesData.map((guideline, index) => {
             const Icon = guideline.icon
             return (
-              <div 
+              <div
                 key={index}
-                className="bg-white rounded-xl shadow-sm border border-gold/50 overflow-hidden"
+                className="bg-card rounded-xl shadow-sm border border-border overflow-hidden"
               >
                 <div className={`${guideline.color} px-5 py-4 flex items-center gap-3`}>
-                  <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg bg-card/20 flex items-center justify-center">
                     <Icon className="w-5 h-5 text-white" />
                   </div>
                   <h2 className="text-lg font-semibold text-white">{guideline.title}</h2>
@@ -99,7 +99,7 @@ export default function GuidelinesPage() {
         </div>
 
         {/* Footer Quote */}
-        <div className="mt-8 bg-white rounded-xl p-6 shadow-sm border border-gold/50">
+        <div className="mt-8 bg-card rounded-xl p-6 shadow-sm border border-border">
           <div className="flex items-start gap-4">
             <div className="bg-saffron/20 p-3 rounded-lg shrink-0">
               <Quote className="w-5 h-5 text-saffron" />
@@ -108,7 +108,7 @@ export default function GuidelinesPage() {
               <p className="text-foreground italic text-lg leading-relaxed">
                 &ldquo;Discipline is also devotion.&rdquo;
               </p>
-              <p className="text-peacock font-medium mt-3">
+              <p className="text-foreground font-medium mt-3">
                 &mdash; Following these guidelines is seva to the community
               </p>
             </div>
@@ -119,7 +119,7 @@ export default function GuidelinesPage() {
         <div className="mt-6 p-4 bg-muted/50 rounded-xl border border-gold/30 text-center">
           <p className="text-sm text-muted-foreground">
             For questions or clarifications, please contact the IT Cell at{' '}
-            <span className="text-peacock font-medium">itcell@isckonsanjeevani.org</span>
+            <span className="text-primary font-medium">itcell@isckonsanjeevani.org</span>
           </p>
         </div>
       </div>

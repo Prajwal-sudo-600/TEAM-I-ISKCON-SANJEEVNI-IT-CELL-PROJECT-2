@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import BackButton from '../components/layout/BackButton'
 import { Check } from 'lucide-react'
-import { getProfile, upsertProfile } from '@/actions/userProfileActions'
+import { getProfile, upsertProfile } from '@/actions/user/userProfileActions'
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
@@ -91,8 +91,8 @@ export default function ProfilePage() {
         )}
 
         {/* PROFILE CARD */}
-        <div className="bg-white rounded-xl shadow-sm border border-gold/50 p-6 space-y-5">
-          <h2 className="text-xl font-semibold text-peacock">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6 space-y-5">
+          <h2 className="text-xl font-semibold text-primary">
             {userData.name || 'Your Profile'}
           </h2>
 

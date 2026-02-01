@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Plus, Trash2, Edit, Box, DoorOpen, X, Check } from 'lucide-react'
-import { createResource, updateResource, deleteResource, assignResourceToRoom, removeResourceFromRoom, getResourceAssignments } from '@/actions/adminresourcesactions'
+import { createResource, updateResource, deleteResource, assignResourceToRoom, removeResourceFromRoom, getResourceAssignments } from '@/actions/admin/adminresourcesactions'
 import { toast } from 'sonner'
 
 export default function ResourcesClient({ initialResources, rooms }) {
@@ -136,9 +136,9 @@ export default function ResourcesClient({ initialResources, rooms }) {
             </div>
 
             {/* Resources Table */}
-            <div className="bg-white/40 backdrop-blur-xl border border-white/40 shadow-xl rounded-2xl p-6 overflow-hidden">
+            <div className="bg-card border border-border shadow-sm rounded-2xl p-6 overflow-hidden">
                 <table className="w-full">
-                    <thead className="border-b border-gray-200/50 text-left text-gray-700">
+                    <thead className="border-b border-border text-left text-muted-foreground">
                         <tr>
                             <th className="p-4 font-semibold w-full">Name</th>
                             <th className="text-right p-4 font-semibold w-[200px]">Actions</th>
@@ -153,7 +153,7 @@ export default function ResourcesClient({ initialResources, rooms }) {
                             </tr>
                         ) : (
                             resources.map((res, idx) => (
-                                <tr key={res.id} className="border-b border-gray-100 hover:bg-white/30 transition-colors">
+                                <tr key={res.id} className="border-b border-border hover:bg-muted/50 transition-colors">
                                     <td className="p-4 font-medium">{res.name}</td>
                                     <td className="p-4 text-right flex justify-end gap-2">
                                         <button
@@ -188,8 +188,8 @@ export default function ResourcesClient({ initialResources, rooms }) {
             {/* Add/Edit Modal */}
             {isAddModalOpen && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-                        <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+                    <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+                        <div className="p-4 border-b border-border flex justify-between items-center">
                             <h2 className="font-semibold text-lg">{editingResource ? 'Edit Resource' : 'Add Resource'}</h2>
                             <button onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-gray-600">
                                 <X className="w-5 h-5" />
@@ -203,7 +203,7 @@ export default function ResourcesClient({ initialResources, rooms }) {
                                     required
                                     value={formData.name}
                                     onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    className="w-full p-2 border border-input bg-background rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                     placeholder="e.g. Projector"
                                 />
                             </div>
@@ -230,9 +230,9 @@ export default function ResourcesClient({ initialResources, rooms }) {
 
             {/* Room Management Modal */}
             {isRoomModalOpen && selectedResourceForRooms && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh]">
-                        <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+                <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh]">
+                        <div className="p-4 border-b border-border flex justify-between items-center">
                             <div>
                                 <h2 className="font-semibold text-lg">Manage Room Access</h2>
                                 <p className="text-sm text-muted-foreground">Assign <strong>{selectedResourceForRooms.name}</strong> to specific rooms.</p>

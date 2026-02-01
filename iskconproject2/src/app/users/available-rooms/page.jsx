@@ -5,8 +5,8 @@ import DashboardLayout from '../components/layout/DashboardLayout'
 import BackButton from '../components/layout/BackButton'
 import { Users, Monitor, Wifi, Eye, CalendarPlus } from 'lucide-react'
 import Link from 'next/link'
-import { getActiveRooms } from '@/actions/userroomactions'
-import { getAvailableRooms } from '@/actions/bookingsactions-user'
+import { getActiveRooms } from '@/actions/user/userroomactions'
+import { getAvailableRooms } from '@/actions/user/bookingsactions-user'
 
 const timeSlots = [
   '09:00 AM - 10:00 AM',
@@ -92,12 +92,12 @@ export default function AvailableRoomsPage() {
         <BackButton />
 
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-peacock mb-2">Available Rooms</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Available Rooms</h1>
           <p className="text-muted-foreground">Browse and book rooms for your seva activities</p>
         </div>
 
         {/* Filters UI unchanged */}
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gold/50 mb-6">
+        <div className="bg-card rounded-xl p-5 shadow-sm border border-border mb-6">
           <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
           <select value={selectedTimeSlot} onChange={(e) => setSelectedTimeSlot(e.target.value)}>
             <option value="">All Time Slots</option>
@@ -111,7 +111,7 @@ export default function AvailableRoomsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {roomsData.map(room => (
-              <div key={room.id} className="bg-white rounded-xl shadow-sm border p-5">
+              <div key={room.id} className="bg-card rounded-xl shadow-sm border border-border p-5">
                 <h3 className="font-semibold">{room.name}</h3>
                 <p>Capacity: {room.capacity}</p>
 

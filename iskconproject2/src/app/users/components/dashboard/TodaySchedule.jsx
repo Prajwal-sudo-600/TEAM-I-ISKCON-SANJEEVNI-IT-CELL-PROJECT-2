@@ -8,9 +8,9 @@ const statusStyles = {
 
 export default function TodaySchedule({ data = [], loading }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gold/50 overflow-hidden">
+    <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
       <div className="p-4 border-b border-gold bg-muted/30">
-        <h3 className="font-semibold text-peacock">Today&apos;s Schedule</h3>
+        <h3 className="font-semibold text-primary">Today&apos;s Schedule</h3>
       </div>
 
       {loading ? (

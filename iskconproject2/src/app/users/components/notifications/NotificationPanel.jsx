@@ -12,7 +12,7 @@ const iconMap = {
 const colorMap = {
   approved: 'text-green-600',
   rejected: 'text-destructive',
-  message: 'text-peacock',
+  message: 'text-foreground',
   reminder: 'text-saffron',
 }
 
@@ -22,17 +22,17 @@ export default function NotificationPanel({ isOpen, onClose, notifications = [],
   return (
     <>
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/20 z-40"
         onClick={onClose}
       />
-      
+
       {/* Panel */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-xl z-50 animate-in slide-in-from-right duration-300">
+      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-card shadow-xl z-50 animate-in slide-in-from-right duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gold">
-          <h2 className="text-lg font-semibold text-peacock">Notifications</h2>
-          <button 
+          <h2 className="text-lg font-semibold text-foreground">Notifications</h2>
+          <button
             onClick={onClose}
             className="p-2 hover:bg-muted rounded-lg transition-colors"
           >
@@ -42,9 +42,9 @@ export default function NotificationPanel({ isOpen, onClose, notifications = [],
 
         {/* Actions */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-gold bg-muted/50">
-          <button 
+          <button
             onClick={onMarkAllRead}
-            className="flex items-center gap-2 text-sm text-peacock hover:underline"
+            className="flex items-center gap-2 text-sm text-foreground hover:underline"
           >
             <Check className="w-4 h-4" />
             Mark all as read
@@ -65,14 +65,13 @@ export default function NotificationPanel({ isOpen, onClose, notifications = [],
             <ul className="divide-y divide-gold">
               {notifications.map((notification) => {
                 const Icon = iconMap[notification.type] || MessageSquare
-                const iconColor = colorMap[notification.type] || 'text-peacock'
-                
+                const iconColor = colorMap[notification.type] || 'text-foreground'
+
                 return (
-                  <li 
+                  <li
                     key={notification.id}
-                    className={`p-4 transition-colors ${
-                      notification.read ? 'bg-white' : 'bg-saffron/10'
-                    }`}
+                    className={`p-4 transition-colors ${notification.read ? 'bg-card' : 'bg-primary/5'
+                      }`}
                   >
                     <div className="flex gap-3">
                       <div className={`mt-0.5 ${iconColor}`}>

@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import BackButton from '../components/layout/BackButton'
 import { Send } from 'lucide-react'
-import { createBooking } from '@/actions/bookingsactions-user'
+import { createBooking } from '@/actions/user/bookingsactions-user'
 import { supabase } from '@/lib/supabase/client'
-import { getResourcesForRoom } from '@/actions/userRoomResourceActions'
+import { getResourcesForRoom } from '@/actions/user/userRoomResourceActions'
 
 export default function BookRoomPage() {
 
@@ -137,7 +137,7 @@ export default function BookRoomPage() {
         <select
           value={formData.roomId}
           onChange={(e) => handleRoomChange(e.target.value)}
-          className="w-full border p-2 rounded"
+          className="w-full border border-input bg-card text-foreground p-2 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         >
           <option value="">Select Room</option>
           {rooms.map((room) => (
@@ -149,7 +149,7 @@ export default function BookRoomPage() {
 
         {/* RESOURCES CHECKBOX */}
         {resources.length > 0 && (
-          <div className="border rounded p-3 bg-gray-50">
+          <div className="border border-border rounded-xl p-3 bg-muted/50">
             <p className="font-semibold mb-2">Select Resources</p>
             {resources.map((r) => (
               <label key={r.id} className="flex gap-2 items-center">
@@ -171,7 +171,7 @@ export default function BookRoomPage() {
           onChange={(e) =>
             setFormData({ ...formData, date: e.target.value })
           }
-          className="w-full border p-2 rounded"
+          className="w-full border border-input bg-card text-foreground p-2 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         />
 
         {/* TIME */}
@@ -198,7 +198,7 @@ export default function BookRoomPage() {
           onChange={(e) =>
             setFormData({ ...formData, purpose: e.target.value })
           }
-          className="w-full border p-2 rounded"
+          className="w-full border border-input bg-card text-foreground p-2 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         />
 
         {/* SUBMIT */}

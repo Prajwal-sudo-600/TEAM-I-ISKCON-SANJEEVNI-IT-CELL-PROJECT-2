@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Check, X, MessageSquare, Trash2 } from "lucide-react";
-import { approveBooking, rejectBooking, deleteBooking } from '@/actions/adminbookingsactions'
+import { approveBooking, rejectBooking, deleteBooking } from '@/actions/admin/adminbookingsactions'
 
 export default function BookingsClient({ initialBookings }) {
     const [bookings, setBookings] = useState(initialBookings);
@@ -57,11 +57,11 @@ export default function BookingsClient({ initialBookings }) {
     }
 
     return (
-        <div className="bg-white/40 backdrop-blur-xl border border-white/40 shadow-xl rounded-2xl p-6">
+        <div className="bg-card border border-border shadow-sm rounded-2xl p-6 overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
                     <thead>
-                        <tr className="border-b border-gray-200/50 text-left text-gray-700">
+                        <tr className="border-b border-border text-left text-muted-foreground">
                             <th className="p-3 font-semibold">User</th>
                             <th className="p-3 font-semibold">Room</th>
                             <th className="p-3 font-semibold">Date & Time</th>
@@ -82,7 +82,7 @@ export default function BookingsClient({ initialBookings }) {
                             bookings.map((booking) => (
                                 <tr
                                     key={booking.id}
-                                    className="border-b border-gray-100 hover:bg-white/30 transition-colors"
+                                    className="border-b border-border hover:bg-muted/50 transition-colors"
                                 >
                                     {/* User */}
                                     <td className="p-3">

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-import { signUpUser } from "@/actions/authActions";
+import { signUpUser } from "@/actions/authorization/authActions";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -60,14 +60,14 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#fbd0b8] via-[#fcbfa0] to-[#f9aa80]">
       {/* Glass Card */}
       <div className="bg-white/25 backdrop-blur-xl border border-white/30 shadow-2xl rounded-3xl px-8 py-6 w-full max-w-md transition transform hover:scale-105 duration-300">
-        
+
         {/* Title */}
         <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
           Create Account
         </h2>
 
         <form className="space-y-2" onSubmit={handleSignUp}>
-          
+
           {/* Full Name */}
           <input
             name="fullName"

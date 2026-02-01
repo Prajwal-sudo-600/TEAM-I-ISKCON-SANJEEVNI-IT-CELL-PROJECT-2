@@ -11,7 +11,7 @@ import {
   updatePassword,
   getUserStats,
   getUserActivity
-} from '@/actions/adminProfileActions'
+} from '@/actions/admin/adminProfileActions'
 import { toast } from 'sonner'
 
 export default function ProfilePage() {

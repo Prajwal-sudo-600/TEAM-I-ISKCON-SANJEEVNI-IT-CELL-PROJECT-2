@@ -1,7 +1,7 @@
 "use server"
 
 import AdminLayout from '@/app/admin/components/admin/admin-layout'
-import { getBookings } from '@/actions/adminbookingsactions'
+import { getBookings } from '@/actions/admin/adminbookingsactions'
 import BookingsClient from './BookingsClient'
 
 function formatBookingDate(bookingDate) {

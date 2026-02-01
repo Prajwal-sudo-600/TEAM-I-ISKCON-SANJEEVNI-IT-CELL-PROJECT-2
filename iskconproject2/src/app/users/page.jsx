@@ -6,7 +6,7 @@ import WelcomeCard from './components/dashboard/WelcomeCard'
 import SummaryCards from './components/dashboard/SummaryCards'
 import TodaySchedule from './components/dashboard/TodaySchedule'
 import KrishnaQuote from './components/dashboard/KrishnaQuote'
-import { getDashboardData } from '@/actions/userdashboardActions'
+import { getDashboardData } from '@/actions/user/userdashboardActions'
 
 export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState(null)

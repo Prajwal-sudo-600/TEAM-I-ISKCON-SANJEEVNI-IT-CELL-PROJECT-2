@@ -1,7 +1,7 @@
 "use server"
 
 import AdminLayout from '@/app/admin/components/admin/admin-layout'
-import { getRooms } from '@/actions/adminroomsactions'
+import { getRooms } from '@/actions/admin/adminroomsactions'
 import RoomsClient from './RoomsClient'
 
 export default async function RoomsPage() {

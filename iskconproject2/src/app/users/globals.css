@@ -85,14 +85,18 @@
   --color-warm-white: #FDFBF7;
   --color-lotus: #E6A6B2;
   --color-gold: #E8D8A8;
+  --color-gold: #E8D8A8;
 }
+
+
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
-    @apply bg-warm-white text-foreground;
+    @apply bg-background text-foreground;
   }
 }
 

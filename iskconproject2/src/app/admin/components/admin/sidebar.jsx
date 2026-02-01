@@ -20,7 +20,7 @@ const navItems = [
   { name: 'Admin Profile', href: '/admin/profile', icon: User },
 ]
 
-import { logout } from '@/actions/adminProfileActions'
+import { logout } from '@/actions/admin/adminProfileActions'
 
 // ...
 
@@ -62,8 +62,8 @@ export default function Sidebar() {
                 <button
                   onClick={() => handleNavigation(item.href)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
-                      ? 'bg-white/20 text-white'
-                      : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-white'
+                    ? 'bg-white/20 text-white'
+                    : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-white'
                     }`}
                 >
                   <Icon className="w-5 h-5" />

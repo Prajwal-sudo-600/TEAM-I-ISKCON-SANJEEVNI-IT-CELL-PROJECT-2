@@ -27,6 +27,7 @@ export async function getMyBookings() {
         end_time,
         purpose,
         status,
+        remarks,
         created_at,
         rooms ( name )
       `)

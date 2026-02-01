@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { loginWithEmail } from "@/lib/auth";
-import { getUserRole } from "@/actions/authActions"; // ✅ Switch to Server Action
+import { getUserRole } from "@/actions/authorization/authActions"; // ✅ Switch to Server Action
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);

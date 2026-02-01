@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Plus, Pencil, Trash2, X, Check } from "lucide-react";
-import { createRoom, updateRoom, deleteRoom } from '@/actions/adminroomsactions';
+import { createRoom, updateRoom, deleteRoom } from '@/actions/admin/adminroomsactions';
 
 export default function RoomsClient({ initialRooms = [] }) {
     const [rooms, setRooms] = useState(initialRooms);
@@ -74,10 +74,10 @@ export default function RoomsClient({ initialRooms = [] }) {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center bg-white/40 backdrop-blur-xl border border-white/40 shadow-sm rounded-2xl p-6">
+            <div className="flex justify-between items-center bg-card border border-border shadow-sm rounded-2xl p-6">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800">Rooms</h2>
-                    <p className="text-gray-500">Manage conference and meeting rooms</p>
+                    <h2 className="text-2xl font-bold text-foreground">Rooms</h2>
+                    <p className="text-muted-foreground">Manage conference and meeting rooms</p>
                 </div>
                 <button
                     onClick={() => {
@@ -93,9 +93,9 @@ export default function RoomsClient({ initialRooms = [] }) {
 
             {/* Create / Edit Form */}
             {(isCreating || editingRoom) && (
-                <div className="bg-white/40 backdrop-blur-xl border border-white/40 shadow-xl rounded-2xl p-6 animate-in slide-in-from-top-4">
+                <div className="bg-card border border-border shadow-sm rounded-2xl p-6 animate-in slide-in-from-top-4">
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800">
+                        <h3 className="text-lg font-semibold text-foreground">
                             {editingRoom ? "Edit Room" : "Create New Room"}
                         </h3>
                         <button
@@ -108,7 +108,7 @@ export default function RoomsClient({ initialRooms = [] }) {
 
                     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-foreground mb-1">
                                 Room Name
                             </label>
                             <input
@@ -118,7 +118,7 @@ export default function RoomsClient({ initialRooms = [] }) {
                                 onChange={(e) =>
                                     setFormData({ ...formData, name: e.target.value })
                                 }
-                                className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                                className="w-full px-4 py-2 rounded-xl border border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                 placeholder="e.g. Conference Room A"
                             />
                         </div>
@@ -135,13 +135,13 @@ export default function RoomsClient({ initialRooms = [] }) {
                                 onChange={(e) =>
                                     setFormData({ ...formData, capacity: e.target.value })
                                 }
-                                className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                                className="w-full px-4 py-2 rounded-xl border border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                 placeholder="e.g. 10"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-foreground mb-1">
                                 Type
                             </label>
                             <select
@@ -149,7 +149,7 @@ export default function RoomsClient({ initialRooms = [] }) {
                                 onChange={(e) =>
                                     setFormData({ ...formData, type: e.target.value })
                                 }
-                                className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                                className="w-full px-4 py-2 rounded-xl border border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                             >
                                 <option value="Meeting">Meeting Room</option>
                                 <option value="Conference">Conference Hall</option>
@@ -159,7 +159,7 @@ export default function RoomsClient({ initialRooms = [] }) {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-foreground mb-1">
                                 Status
                             </label>
                             <select
@@ -167,7 +167,7 @@ export default function RoomsClient({ initialRooms = [] }) {
                                 onChange={(e) =>
                                     setFormData({ ...formData, status: e.target.value })
                                 }
-                                className="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                                className="w-full px-4 py-2 rounded-xl border border-input bg-background focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                             >
                                 <option value="Active">Active</option>
                                 <option value="Maintenance">Maintenance</option>
@@ -178,7 +178,7 @@ export default function RoomsClient({ initialRooms = [] }) {
                             <button
                                 type="button"
                                 onClick={resetForm}
-                                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors font-medium"
+                                className="px-4 py-2 text-muted-foreground hover:bg-muted rounded-xl transition-colors font-medium"
                             >
                                 Cancel
                             </button>
@@ -194,11 +194,11 @@ export default function RoomsClient({ initialRooms = [] }) {
             )}
 
             {/* Rooms Table */}
-            <div className="bg-white/40 backdrop-blur-xl border border-white/40 shadow-xl rounded-2xl p-6">
+            <div className="bg-card border border-border shadow-sm rounded-2xl p-6">
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="border-b border-gray-200/50 text-left text-gray-700">
+                            <tr className="border-b border-border text-left text-muted-foreground">
                                 <th className="p-3 font-semibold">Name</th>
                                 <th className="p-3 font-semibold">Capacity</th>
                                 <th className="p-3 font-semibold">Type</th>
@@ -217,22 +217,22 @@ export default function RoomsClient({ initialRooms = [] }) {
                                 rooms.map((room) => (
                                     <tr
                                         key={room.id}
-                                        className="border-b border-gray-100 hover:bg-white/30 transition-colors"
+                                        className="border-b border-border hover:bg-muted/50 transition-colors"
                                     >
-                                        <td className="p-3 font-medium text-gray-900">
+                                        <td className="p-3 font-medium text-foreground">
                                             {room.name}
                                         </td>
-                                        <td className="p-3 text-gray-600">{room.capacity} people</td>
+                                        <td className="p-3 text-muted-foreground">{room.capacity} people</td>
                                         <td className="p-3">
-                                            <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium border border-gray-200">
+                                            <span className="px-2 py-1 bg-secondary text-muted-foreground rounded-lg text-xs font-medium border border-border">
                                                 {room.type}
                                             </span>
                                         </td>
                                         <td className="p-3">
                                             <span
                                                 className={`px-3 py-1 rounded-full text-xs font-semibold ${room.status === "Active"
-                                                        ? "bg-green-100 text-green-700"
-                                                        : "bg-yellow-100 text-yellow-700"
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-yellow-100 text-yellow-700"
                                                     }`}
                                             >
                                                 {room.status}

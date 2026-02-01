@@ -45,7 +45,7 @@ const devotionalQuotes = [
   "May every action be an offering to the Divine.",
 ]
 
-import { getDashboardStats } from '@/actions/admindashboardactions'
+import { getDashboardStats } from '@/actions/admin/admindashboardactions'
 
 export default function Dashboard() {
   const [currentQuote, setCurrentQuote] = useState(0)

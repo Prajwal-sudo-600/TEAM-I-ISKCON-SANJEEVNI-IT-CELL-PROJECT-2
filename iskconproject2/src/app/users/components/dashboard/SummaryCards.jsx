@@ -36,9 +36,9 @@ export default function SummaryCards({ data, loading }) {
       {summaryData.map((item, index) => {
         const Icon = item.icon
         return (
-          <div 
+          <div
             key={index}
-            className="bg-white rounded-xl p-5 shadow-sm border border-gold/50 hover:shadow-md transition-shadow"
+            className="bg-card rounded-xl p-5 shadow-sm border border-border hover:shadow-md transition-shadow"
           >
             <div className="flex items-start justify-between">
               <div>
