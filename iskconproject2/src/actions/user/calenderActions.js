@@ -6,6 +6,12 @@ export async function getCalendarBookings() {
   try {
     const supabase = await createSupabaseServerClient()
 
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return { success: false, error: 'Unauthorized' }
+    }
+
     const { data, error } = await supabase
       .from('bookings')
       .select(`
@@ -18,6 +24,7 @@ export async function getCalendarBookings() {
         room_id,
         rooms ( name )
       `)
+      .eq('user_id', user.id)
       .order('date')
 
     if (error) {

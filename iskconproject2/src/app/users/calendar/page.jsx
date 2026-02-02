@@ -14,7 +14,7 @@ const timeSlots = [
 
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [view, setView] = useState('week')
+  // Removed view state, default is week
   const [bookingsData, setBookingsData] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -79,14 +79,6 @@ export default function CalendarPage() {
     setCurrentDate(newDate)
   }
 
-  const navigateDay = (direction) => {
-    const newDate = new Date(currentDate)
-    newDate.setDate(currentDate.getDate() + direction)
-    setCurrentDate(newDate)
-  }
-
-  const goToToday = () => setCurrentDate(new Date())
-
   const monthYear = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
   if (loading) {
@@ -111,29 +103,16 @@ export default function CalendarPage() {
         <div className="bg-card rounded-xl p-4 shadow-sm border border-border mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 
-            <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
-              <button onClick={() => setView('week')}
-                className={`px-4 py-2 rounded-md text-sm font-medium ${view === 'week' ? 'bg-card text-primary shadow-sm' : ''}`}>
-                Week
-              </button>
-              <button onClick={() => setView('day')}
-                className={`px-4 py-2 rounded-md text-sm font-medium ${view === 'day' ? 'bg-card text-primary shadow-sm' : ''}`}>
-                Day
-              </button>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-lg">{monthYear}</span>
             </div>
 
             <div className="flex items-center gap-3">
-              <button onClick={goToToday}
-                className="px-4 py-2 border border-primary text-primary rounded-lg hover:bg-primary hover:text-primary-foreground text-sm">
-                Today
-              </button>
-
               <div className="flex items-center gap-1">
-                <button onClick={() => view === 'week' ? navigateWeek(-1) : navigateDay(-1)}>
+                <button onClick={() => navigateWeek(-1)} className="p-2 hover:bg-muted rounded-full">
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <span className="font-semibold min-w-[180px] text-center">{monthYear}</span>
-                <button onClick={() => view === 'week' ? navigateWeek(1) : navigateDay(1)}>
+                <button onClick={() => navigateWeek(1)} className="p-2 hover:bg-muted rounded-full">
                   <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
@@ -142,32 +121,42 @@ export default function CalendarPage() {
         </div>
 
         {/* WEEK VIEW */}
-        {view === 'week' && (
-          <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
-            {timeSlots.map(time => (
-              <div key={time} className="grid grid-cols-8 border-b">
-                <div className="p-3 text-xs bg-muted/30">{time}</div>
-                {weekDates.map((date, idx) => {
-                  const bookings = getBookingsForDate(date).filter(b => b.time === time)
-                  return (
-                    <div key={idx} className="p-2 min-h-[60px] border-l">
-                      {bookings.map((booking, i) => (
-                        <div key={i}
-                          className={`text-xs p-2 rounded mb-1 ${booking.status === 'approved'
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-yellow-100 text-yellow-700'
-                            }`}>
-                          <p className="font-medium truncate">{booking.room}</p>
-                          <p className="truncate opacity-80">{booking.purpose}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )
-                })}
+        <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+          {/* Header Row */}
+          <div className="grid grid-cols-8 border-b bg-muted/30">
+            <div className="p-3 text-xs font-semibold text-center border-r">Time</div>
+            {weekDates.map((date, idx) => (
+              <div key={idx} className="p-2 text-center border-r last:border-r-0">
+                <div className="text-sm font-semibold">{daysOfWeek[date.getDay()]}</div>
+                <div className="text-xs text-muted-foreground">
+                  {date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
+                </div>
               </div>
             ))}
           </div>
-        )}
+          {timeSlots.map(time => (
+            <div key={time} className="grid grid-cols-8 border-b">
+              <div className="p-3 text-xs bg-muted/30">{time}</div>
+              {weekDates.map((date, idx) => {
+                const bookings = getBookingsForDate(date).filter(b => b.time === time)
+                return (
+                  <div key={idx} className="p-2 min-h-[60px] border-l">
+                    {bookings.map((booking, i) => (
+                      <div key={i}
+                        className={`text-xs p-2 rounded mb-1 ${booking.status === 'approved'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-yellow-100 text-yellow-700'
+                          }`}>
+                        <p className="font-medium truncate">{booking.room}</p>
+                        <p className="truncate opacity-80">{booking.purpose}</p>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })}
+            </div>
+          ))}
+        </div>
       </div>
     </DashboardLayout>
   )

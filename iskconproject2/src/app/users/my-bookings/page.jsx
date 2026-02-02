@@ -31,7 +31,7 @@ export default function MyBookingsPage() {
         const mapped = res.data.map(b => ({
           id: b.id,
           room: b.rooms?.name || 'Unknown Room',
-          date: new Date(b.booking_date).toLocaleDateString('en-GB', {
+          date: new Date(b.date).toLocaleDateString('en-GB', {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
@@ -89,10 +89,10 @@ export default function MyBookingsPage() {
 
                 {status !== 'all' && (
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${filter === status
-                      ? 'bg-white/20 text-white'
-                      : status === 'approved' ? 'bg-green-100 text-green-700'
-                        : status === 'rejected' ? 'bg-red-100 text-red-700'
-                          : 'bg-orange-100 text-orange-700'
+                    ? 'bg-white/20 text-white'
+                    : status === 'approved' ? 'bg-green-100 text-green-700'
+                      : status === 'rejected' ? 'bg-red-100 text-red-700'
+                        : 'bg-orange-100 text-orange-700'
                     }`}>
                     {bookingsData.filter(b => b.status === status).length}
                   </span>
