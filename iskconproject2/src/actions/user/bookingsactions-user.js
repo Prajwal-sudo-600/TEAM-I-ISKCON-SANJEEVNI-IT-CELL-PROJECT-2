@@ -16,7 +16,7 @@ export async function createBooking(bookingData) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { success: false, error: 'Unauthorized' }
 
-    
+
     const { data: overlapping } = await adminSupabase
       .from('bookings')
       .select('id')
@@ -30,7 +30,7 @@ export async function createBooking(bookingData) {
       return { success: false, error: 'Room already booked' }
     }
 
-   
+
     const { data: newBooking, error: insertError } = await supabase
       .from('bookings')
       .insert({
@@ -51,7 +51,7 @@ export async function createBooking(bookingData) {
       return { success: false, error: insertError.message }
     }
 
-    
+
     if (bookingData.resources && bookingData.resources.length > 0) {
       const resourceRows = bookingData.resources.map(resourceId => ({
         booking_id: newBooking.id,
@@ -67,7 +67,7 @@ export async function createBooking(bookingData) {
       }
     }
 
-    
+
     await supabase.from('booking_history').insert({
       booking_id: newBooking.id,
       status: 'pending',
@@ -97,10 +97,17 @@ export async function getAvailableRooms(date, startTime, endTime) {
 
     const { data: allRooms } = await supabase
       .from('rooms')
-      .select('*')
+      .select(`
+        *,
+        room_resources (
+          resources (
+            name
+          )
+        )
+      `)
       .eq('is_active', true)
 
-    
+
     const { data: bookedRooms } = await adminSupabase
       .from('bookings')
       .select('room_id')

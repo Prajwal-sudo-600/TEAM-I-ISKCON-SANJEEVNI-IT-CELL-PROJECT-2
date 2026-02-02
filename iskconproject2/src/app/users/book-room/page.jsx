@@ -10,7 +10,10 @@ import { getResourcesForRoom } from '@/actions/user/userRoomResourceActions'
 import { getAiSuggestions } from '@/actions/user/ai-actions'
 import { toast } from 'sonner' // Assuming sonner is installed as per package.json
 
+import { useSearchParams } from 'next/navigation' // Added import
+
 export default function BookRoomPage() {
+  const searchParams = useSearchParams() // Hook usage
 
   const [rooms, setRooms] = useState([])
   const [resources, setResources] = useState([])
@@ -30,6 +33,7 @@ export default function BookRoomPage() {
     purpose: '',
   })
 
+  // ... resource toggle ...
   /* -------- RESOURCE TOGGLE -------- */
   const toggleResource = (id) => {
     setSelectedResources(prev =>
@@ -51,7 +55,7 @@ export default function BookRoomPage() {
     '05:00 PM - 06:00 PM',
   ]
 
-  /* -------- FETCH ROOMS -------- */
+  /* -------- FETCH ROOMS & PARAMS -------- */
   useEffect(() => {
     const fetchRooms = async () => {
       const { data, error } = await supabase
@@ -59,11 +63,34 @@ export default function BookRoomPage() {
         .select('id, name')
         .eq('is_active', true)
 
-      if (!error) setRooms(data || [])
+      if (!error) {
+        setRooms(data || [])
+
+        // Handle query params after rooms are loaded (optional, but good for validation if needed)
+        // Or just set them directly
+      }
     }
 
     fetchRooms()
-  }, [])
+
+    // Read params
+    const roomParam = searchParams.get('room')
+    const dateParam = searchParams.get('date')
+    const timeSlotParam = searchParams.get('timeSlot')
+
+    if (roomParam || dateParam || timeSlotParam) {
+      setFormData(prev => ({
+        ...prev,
+        roomId: roomParam || prev.roomId,
+        date: dateParam || prev.date,
+        timeSlot: timeSlotParam ? decodeURIComponent(timeSlotParam) : prev.timeSlot
+      }))
+
+      if (roomParam) {
+        handleRoomChange(roomParam)
+      }
+    }
+  }, [searchParams]) // Add searchParams dependency
 
   /* -------- ROOM CHANGE -------- */
   const handleRoomChange = async (roomId) => {

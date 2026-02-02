@@ -72,7 +72,7 @@ export default function AvailableRoomsPage() {
           id: r.id,
           name: r.name,
           capacity: r.capacity,
-          amenities: [],
+          amenities: r.room_resources?.map(rr => rr.resources?.name).filter(Boolean) || [],
           available: true,
         }))
         setRoomsData(mapped)
@@ -116,12 +116,23 @@ export default function AvailableRoomsPage() {
                 <h3 className="font-semibold">{room.name}</h3>
                 <p>Capacity: {room.capacity}</p>
 
-                <div className="flex gap-2 mt-3">
-                  <button className="border px-3 py-2 rounded">View Schedule</button>
+                {room.amenities.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-sm font-medium text-muted-foreground">Resources:</p>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {room.amenities.map((amenity, idx) => (
+                        <span key={idx} className="text-xs bg-secondary/40 text-muted-foreground px-2 py-1 rounded-md">
+                          {amenity}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
+                <div className="flex gap-2 mt-3">
                   <Link
-                    href={`/users/book-room?room=${room.id}`}
-                    className="bg-saffron text-white px-3 py-2 rounded"
+                    href={`/users/book-room?room=${room.id}&date=${selectedDate}&timeSlot=${encodeURIComponent(selectedTimeSlot)}`}
+                    className="bg-saffron text-white px-3 py-2 rounded w-full text-center"
                   >
                     Book
                   </Link>

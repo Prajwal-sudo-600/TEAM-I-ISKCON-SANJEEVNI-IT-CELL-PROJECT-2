@@ -7,7 +7,17 @@ export async function getActiveRooms() {
 
   const { data, error } = await supabase
     .from('rooms')
-    .select('id, name, capacity, type')
+    .select(`
+      id, 
+      name, 
+      capacity, 
+      type, 
+      room_resources (
+        resources (
+          name
+        )
+      )
+    `)
     .eq('status', 'Active')   // ← FIXED
     .order('name')
 
