@@ -3,12 +3,11 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import AdminLayout from '@/app/admin/components/admin/admin-layout'
-import { User, Mail, Phone, Shield, Pencil, LogOut, Save, X, MapPin, Lock, Activity } from 'lucide-react'
+import { User, Mail, Phone, Shield, Pencil, LogOut, Save, X, MapPin, Activity } from 'lucide-react'
 import {
   getCurrentProfile,
   updateProfile,
   updateEmail,
-  updatePassword,
   getUserStats,
   getUserActivity
 } from '@/actions/admin/adminProfileActions'
@@ -21,16 +20,11 @@ export default function ProfilePage() {
   const [activity, setActivity] = useState([])
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({})
-  const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
 
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  })
+
 
   const [newEmail, setNewEmail] = useState('')
 
@@ -118,30 +112,7 @@ export default function ProfilePage() {
     setActionLoading(false)
   }
 
-  const handlePasswordUpdate = async () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error('Passwords do not match')
-      return
-    }
 
-    if (passwordData.newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters')
-      return
-    }
-
-    setActionLoading(true)
-    const result = await updatePassword(passwordData.currentPassword, passwordData.newPassword)
-
-    if (result.success) {
-      toast.success('Password updated successfully')
-      setShowPasswordModal(false)
-      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
-    } else {
-      toast.error(result.error || 'Failed to update password')
-    }
-
-    setActionLoading(false)
-  }
 
   const handleEmailUpdate = async () => {
     setActionLoading(true)
@@ -372,23 +343,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Security Settings */}
-            <div className="mt-6 bg-card rounded-xl border border-border shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-4">Security Settings</h3>
-              <button
-                onClick={() => setShowPasswordModal(true)}
-                className="w-full flex items-center justify-between p-4 bg-secondary rounded-lg hover:bg-secondary/80 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <Lock className="w-5 h-5 text-primary" />
-                  <div className="text-left">
-                    <p className="text-sm font-medium text-foreground">Change Password</p>
-                    <p className="text-xs text-muted-foreground">Update your password</p>
-                  </div>
-                </div>
-                <Pencil className="w-4 h-4 text-muted-foreground" />
-              </button>
-            </div>
+
 
             {/* Logout Button */}
 
@@ -478,70 +433,7 @@ export default function ProfilePage() {
 
 
 
-      {/* Password Change Modal */}
-      {showPasswordModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-card rounded-xl border border-border shadow-lg max-w-md w-full mx-4">
-            <div className="p-6 border-b border-border">
-              <h3 className="text-lg font-semibold text-foreground">Change Password</h3>
-            </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.currentPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                  className="w-full px-4 py-3 text-sm bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                  className="w-full px-4 py-3 text-sm bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Confirm New Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.confirmPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                  className="w-full px-4 py-3 text-sm bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-            </div>
-            <div className="p-6 border-t border-border flex justify-end gap-3">
-              <button
-                onClick={() => {
-                  setShowPasswordModal(false)
-                  setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
-                }}
-                className="px-4 py-2 text-sm font-medium text-foreground bg-secondary rounded-lg hover:bg-secondary/80 transition-colors"
-                disabled={actionLoading}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handlePasswordUpdate}
-                className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
-                disabled={actionLoading}
-              >
-                {actionLoading ? 'Updating...' : 'Update Password'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* Email Change Modal */}
       {showEmailModal && (
