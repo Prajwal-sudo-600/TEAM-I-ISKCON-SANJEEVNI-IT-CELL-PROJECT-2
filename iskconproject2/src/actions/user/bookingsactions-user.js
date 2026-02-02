@@ -6,9 +6,11 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 
 /* ---------------- CREATE BOOKING ---------------- */
+/* ---------------- CREATE BOOKING ---------------- */
 export async function createBooking(bookingData) {
   try {
     const supabase = await createSupabaseServerClient()
+    const adminSupabase = await createSupabaseServerClient({ admin: true })
 
     console.log("Incoming bookingData:", bookingData)
 
@@ -16,14 +18,15 @@ export async function createBooking(bookingData) {
     if (!user) return { success: false, error: 'Unauthorized' }
 
     /* ---- OVERLAP CHECK (FIXED) ---- */
-    const { data: overlapping } = await supabase
+    // Use admin client to bypass RLS and see ALL bookings
+    const { data: overlapping } = await adminSupabase
       .from('bookings')
       .select('id')
       .eq('room_id', bookingData.room_id)
       .eq('date', bookingData.date)
       .in('status', ['pending', 'approved'])
-      .lt('start_time', bookingData.end_time)   // FIX
-      .gt('end_time', bookingData.start_time)   // FIX
+      .lt('start_time', bookingData.end_time)
+      .gt('end_time', bookingData.start_time)
 
     if (overlapping && overlapping.length > 0) {
       return { success: false, error: 'Room already booked' }
@@ -92,19 +95,21 @@ export async function createBooking(bookingData) {
 export async function getAvailableRooms(date, startTime, endTime) {
   try {
     const supabase = await createSupabaseServerClient()
+    const adminSupabase = await createSupabaseServerClient({ admin: true })
 
     const { data: allRooms } = await supabase
       .from('rooms')
       .select('*')
       .eq('is_active', true)
 
-    const { data: bookedRooms } = await supabase
+    // Use admin client to see ALL booked rooms
+    const { data: bookedRooms } = await adminSupabase
       .from('bookings')
       .select('room_id')
       .eq('date', date)
       .in('status', ['pending', 'approved'])
-      .lt('start_time', endTime)   // FIX
-      .gt('end_time', startTime)   // FIX
+      .lt('start_time', endTime)
+      .gt('end_time', startTime)
 
     const bookedIds = bookedRooms.map(b => b.room_id)
     const availableRooms = allRooms.filter(r => !bookedIds.includes(r.id))

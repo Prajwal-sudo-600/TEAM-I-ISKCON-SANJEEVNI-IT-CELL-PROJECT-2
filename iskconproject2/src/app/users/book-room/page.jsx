@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import BackButton from '../components/layout/BackButton'
-import { Send } from 'lucide-react'
+import { Send, Sparkles, Loader2 } from 'lucide-react'
 import { createBooking } from '@/actions/user/bookingsactions-user'
 import { supabase } from '@/lib/supabase/client'
 import { getResourcesForRoom } from '@/actions/user/userRoomResourceActions'
+import { getAiSuggestions } from '@/actions/user/ai-actions'
+import { toast } from 'sonner' // Assuming sonner is installed as per package.json
 
 export default function BookRoomPage() {
 
@@ -14,6 +16,12 @@ export default function BookRoomPage() {
   const [resources, setResources] = useState([])
   const [selectedResources, setSelectedResources] = useState([])
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  // AI State
+  const [showAi, setShowAi] = useState(false)
+  const [aiLoading, setAiLoading] = useState(false)
+  const [suggestions, setSuggestions] = useState([])
 
   const [formData, setFormData] = useState({
     roomId: '',
@@ -57,6 +65,8 @@ export default function BookRoomPage() {
   const handleRoomChange = async (roomId) => {
     setFormData({ ...formData, roomId })
     setSelectedResources([])
+    setShowAi(false) // Reset AI on change
+    setSuggestions([])
 
     if (!roomId) {
       setResources([])
@@ -81,6 +91,71 @@ export default function BookRoomPage() {
     return `${h.toString().padStart(2, '0')}:${m}`
   }
 
+  /* -------- AI SUGGESTIONS -------- */
+  const fetchAiSuggestions = async () => {
+    setAiLoading(true)
+    const [start, end] = formData.timeSlot.split(' - ')
+
+    const payload = {
+      room_id: formData.roomId,
+      date: formData.date,
+      start_time: convertTo24Hour(start),
+      end_time: convertTo24Hour(end),
+    }
+
+    const res = await getAiSuggestions(payload)
+    if (res.success) {
+      setSuggestions(res.data)
+      // If no suggestions returned
+      if (res.data.length === 0) {
+        toast.info("No alternative slots found.")
+      }
+    } else {
+      toast.error("Failed to get suggestions")
+    }
+    setAiLoading(false)
+  }
+
+  const applySuggestion = (s) => {
+    // Find room ID if it changed
+    // Convert 24h back to AM/PM slot string if necessary, 
+    // OR mostly likely just set the values and let the user confirm.
+    // Since our TimeSlots are hardcoded strings, we need to match them.
+
+    // Simple logic: If the suggestion matches one of our predefined slots
+    const formatTime = (time24) => {
+      let [h, m] = time24.split(':')
+      h = parseInt(h)
+      const period = h >= 12 ? 'PM' : 'AM'
+      if (h > 12) h -= 12
+      if (h === 0) h = 12
+      return `${h.toString().padStart(2, '0')}:${m} ${period}`
+    }
+
+    const startStr = formatTime(s.startTime)
+    const endStr = formatTime(s.endTime)
+    const slotStr = `${startStr} - ${endStr}`
+
+    // Verify if this generated slot exists in our predefined list
+    const isValidSlot = timeSlots.includes(slotStr)
+
+    setFormData(prev => ({
+      ...prev,
+      roomId: s.roomId,
+      date: s.date,
+      timeSlot: isValidSlot ? slotStr : prev.timeSlot // Keep old if invalid, user might need to adjust
+    }))
+
+    if (!isValidSlot) {
+      toast.warning(`Suggested time (${slotStr}) is not in standard slots. Please verify.`)
+    } else {
+      toast.success("Applied suggestion!")
+    }
+
+    setSuggestions([])
+    setShowAi(false)
+  }
+
   /* -------- SUBMIT -------- */
   const handleSubmit = async () => {
     try {
@@ -89,6 +164,7 @@ export default function BookRoomPage() {
         return
       }
 
+      setLoading(true)
       const [start, end] = formData.timeSlot.split(' - ')
 
       const payload = {
@@ -97,7 +173,7 @@ export default function BookRoomPage() {
         start_time: convertTo24Hour(start),
         end_time: convertTo24Hour(end),
         purpose: formData.purpose || 'General Meeting',
-        resources: selectedResources   // 🔴 IMPORTANT
+        resources: selectedResources
       }
 
       const res = await createBooking(payload)
@@ -105,11 +181,20 @@ export default function BookRoomPage() {
       if (res.success) {
         setSubmitted(true)
       } else {
-        alert(res.error || 'Booking failed')
+        // alert(res.error || 'Booking failed')
+        // Check if error is related to availability
+        if (res.error === 'Room already booked') {
+          setShowAi(true) // Trigger UI to show AI button
+          toast.error("Slot unavailable. Try AI suggestions?")
+        } else {
+          toast.error(res.error)
+        }
       }
     } catch (err) {
       console.error(err)
       alert('Unexpected error')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -201,13 +286,56 @@ export default function BookRoomPage() {
           className="w-full border border-input bg-card text-foreground p-2 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none"
         />
 
+        {/* AI SECTION - ONLY SHOWS ON FAILURE */}
+        {showAi && (
+          <div className="bg-red-50 border border-red-200 p-4 rounded-xl space-y-3 animate-in fade-in slide-in-from-top-2">
+            <div className="flex items-center gap-2 text-red-700">
+              <span className="font-semibold">Selected slot is unavailable.</span>
+            </div>
+
+            {suggestions.length === 0 ? (
+              <button
+                onClick={fetchAiSuggestions}
+                disabled={aiLoading}
+                className="w-full py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-all font-medium shadow-md"
+              >
+                {aiLoading ? <Loader2 className="animate-spin" size={18} /> : <Sparkles size={18} />}
+                Ask AI for Alternate Slots
+              </button>
+            ) : (
+              <div className="space-y-2 mt-2">
+                <p className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                  <Sparkles size={14} className="text-purple-600" />
+                  AI Suggestions:
+                </p>
+                {suggestions.map((s, idx) => (
+                  <div key={idx} className="bg-white p-3 rounded border shadow-sm flex justify-between items-center group hover:border-purple-300 transition-colors">
+                    <div className="text-sm">
+                      <div className="font-semibold text-gray-800">{s.roomName}</div>
+                      <div className="text-gray-500">{s.date} • {s.startTime} - {s.endTime}</div>
+                      <div className="text-xs text-indigo-600 mt-1">{s.reason}</div>
+                    </div>
+                    <button
+                      onClick={() => applySuggestion(s)}
+                      className="px-3 py-1 bg-gray-100 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded transition"
+                    >
+                      Select
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* SUBMIT */}
         <button
           onClick={handleSubmit}
+          disabled={loading || aiLoading}
           className="w-full bg-blue-600 text-white p-3 rounded flex items-center justify-center gap-2"
         >
-          <Send size={18} />
-          Submit Booking
+          {loading ? <Loader2 className="animate-spin" /> : <Send size={18} />}
+          Booking Request
         </button>
       </div>
     </DashboardLayout>

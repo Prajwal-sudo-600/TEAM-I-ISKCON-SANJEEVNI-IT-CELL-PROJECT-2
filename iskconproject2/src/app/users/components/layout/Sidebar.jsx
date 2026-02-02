@@ -31,7 +31,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-64 bg-sidebar border-r border-sidebar-border min-h-[calc(100vh-4rem)] flex flex-col">
+    <aside className="w-64 bg-sidebar border-r border-sidebar-border h-full flex flex-col">
       <nav className="flex-1 p-4">
         <ul className="space-y-1">
           {navItems.map((item) => {

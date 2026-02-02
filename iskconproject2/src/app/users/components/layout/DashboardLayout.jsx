@@ -52,16 +52,16 @@ export default function DashboardLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-warm-white">
-      <Header 
+    <div className="h-screen bg-warm-white flex flex-col overflow-hidden">
+      <Header
         onNotificationClick={handleNotificationClick}
         showNotifications={showNotifications}
         notifications={notifications}
         onMarkAllRead={handleMarkAllRead}
       />
-      <div className="flex">
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-6 overflow-y-auto">
           {children}
         </main>
       </div>
