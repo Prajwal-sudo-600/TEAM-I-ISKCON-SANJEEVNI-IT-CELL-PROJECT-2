@@ -11,7 +11,13 @@ export const metadata = {
 };
 
 export default async function UsersLayout({ children }) {
-  const user = await getUser();
+  let user = null;
+
+  try {
+    user = await getUser();
+  } catch (error) {
+    console.error("Error fetching user in UsersLayout:", error);
+  }
 
   // 🔐 PROTECT ALL /users ROUTES
   if (!user) {

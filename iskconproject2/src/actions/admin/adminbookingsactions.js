@@ -7,6 +7,33 @@ import { revalidatePath } from 'next/cache'
 export async function approveBooking(bookingId) {
     const supabase = await createSupabaseServerClient({ admin: true })
 
+    // 1. Get the booking details first
+    const { data: booking, error: fetchError } = await supabase
+        .from('bookings')
+        .select('room_id, date, start_time, end_time')
+        .eq('id', bookingId)
+        .single()
+
+    if (fetchError || !booking) {
+        return { success: false, error: 'Booking not found' }
+    }
+
+    // 2. Check for overlaps with other APPROVED bookings
+    const { data: overlapping } = await supabase
+        .from('bookings')
+        .select('id')
+        .eq('room_id', booking.room_id)
+        .eq('date', booking.date)
+        .eq('status', 'approved') // Only check strictly against approved bookings
+        .lt('start_time', booking.end_time)
+        .gt('end_time', booking.start_time)
+        .neq('id', bookingId)
+
+    if (overlapping && overlapping.length > 0) {
+        return { success: false, error: 'There is already an accepted booking for this slot.' }
+    }
+
+    // 3. Approve if no conflicts
     const { error } = await supabase
         .from('bookings')
         .update({ status: 'approved', remarks: null })
@@ -14,7 +41,7 @@ export async function approveBooking(bookingId) {
 
     if (error) {
         console.error('Approve error:', error)
-        return { success: false }
+        return { success: false, error: 'Failed to update booking status' }
     }
 
 
@@ -30,7 +57,7 @@ export async function approveBooking(bookingId) {
 
 
 export async function rejectBooking(bookingId, reason) {
-   
+
     const supabase = await createSupabaseServerClient({ admin: true })
 
     const { error } = await supabase
@@ -46,7 +73,7 @@ export async function rejectBooking(bookingId, reason) {
         return { success: false }
     }
 
-   
+
     await supabase.from('booking_history').insert({
         booking_id: bookingId,
         status: 'rejected',
@@ -60,7 +87,7 @@ export async function rejectBooking(bookingId, reason) {
 
 
 export async function deleteBooking(bookingId) {
- 
+
     const supabase = await createSupabaseServerClient({ admin: true })
 
     const { error } = await supabase
@@ -73,7 +100,7 @@ export async function deleteBooking(bookingId) {
         return { success: false }
     }
 
-   
+
 
     revalidatePath('/admin/bookings')
     return { success: true }
